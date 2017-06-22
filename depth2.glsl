@@ -207,7 +207,49 @@ MapSample sphere(vec3 ray, vec3 location, float radius, int mat){
 
 }
 
+//Cilindro infinito
 
+MapSample cylinder(vec3 ray,vec3 location, vec3 c,int mat){
+
+    vec3 p = ray - location;
+
+    return MapSample(distance(p.xy,c.xy) -c.z, mat);
+}
+
+//Cilindro capeado
+MapSample cylinderCap(vec3 ray,vec3 location, vec2 h,int mat){
+
+    vec3 p = ray - location;
+
+    vec2 d = abs(vec2(length(p.xz),p.y)) - h;
+    
+    return MapSample(min(max(d.x,d.y),0.0)+length(max(d,0.0)), mat);
+}
+
+
+//Cono
+MapSample cone(vec3 ray, vec3 location, vec3 c, int mat)
+{
+
+    vec3 p = ray - location;
+
+    vec2 q = vec2(length(p.xz), p.y);
+
+    float d1 = -p.y-c.z;
+
+    float d2 = max(dot(q, c.xy), p.y);
+
+    return MapSample(length(max(vec2(d1, d2), 0.0)) + min(max(d1, d2), 0.), mat);
+}
+
+//Prisma Triangular
+
+MapSample triPrism(vec3 ray, vec3 location, vec2 h, int mat)
+{
+    vec3 p = ray - location;
+    vec3 q = abs(p);
+    return MapSample(max(q.z-h.y,max(q.x*0.866025+p.y*0.5,-p.y)-h.x*0.5), mat);
+}
 
 MapSample box(vec3 ray, vec3 location, vec3 dimension, int mat){
 
@@ -233,6 +275,15 @@ MapSample join(MapSample a, MapSample b){
     return b;
 
 }
+
+//rotacion
+/*vec3 opTx(vec3 ray, vec3 location, mat4 m )
+{
+    vec3 p = ray - location;
+    vec3 q = invert(m)*p;
+    return primitive(q);
+}*/
+
 
 float diff(MapSample a, MapSample b){
 
@@ -270,38 +321,65 @@ vec3 tri(vec3 r, float d){
 
 MapSample map(vec3 ray){
 
+        MapSample a = triPrism(ray,
 
-        MapSample a = sphere(ray, // chrome spheres
+        vec3(2.0f, 2.0f, 0.0f),
 
-        pos1,
+        vec2(1.0f, 2.0f),
 
-        1.0f,
+        11);
 
-        8);
+        a = join(a, box(ray,    // light
 
-        /*MapSample a = cylinderCap(ray,
+        vec3(2.0f, 0.5f, 0.0f),
 
-         vec3(0.0f, 2.0f, 0.0f),
+        vec3(2.0f, 1.0f, 2.0f),
 
-         vec2(0.3f,1.0f),
+        11));    
 
-         8);*/
+        /*a = join(a, cone(ray,
+
+        vec3(4.0f, 2.0f, 0.0f),
+
+        vec3(1.0f, 0.5f,4.0f),
+
+        12));
+
         
+        a = join(a, cylinderCap(ray,
+
+        vec3(-2.0f, 4.0f, 0.0f),
+
+        vec2(1.3f, 2.0f),
+
+        11));
+
 
         a = join(a, sphere(ray, // chrome spheres
 
-        vec3(-5.0f, 0.0f, 0.0f),
+        vec3(-4.0f,2.0f,0.0f),
 
         1.0f,
 
-        7));
+        13));*/
+
+        /*
+         
+        a = join(a, sphere(ray, // chrome spheres
+
+        vec3(3.0f, 3.0f, 0.0f),
+
+        1.0f,
+
+        12));
+       
         a = join(a, sphere(ray, // chrome spheres
 
         vec3(5.0f, 0.0f, 0.0f),
 
         1.0f,
 
-        6));
+        12));
 
         a = join(a, sphere(ray, // chrome spheres
 
@@ -317,58 +395,59 @@ MapSample map(vec3 ray){
 
         1.0f,
 
-        4));
+        4));*/
+
 
         if(on == 0){
         a = join(a, plane(ray, // left wall
 
-        vec3(-7.0f, 0.0f, 0.0f),
+        vec3(-1000.0f, 0.0f, 0.0f),
 
         vec3(1.0f, 0.0f, 0.0f),
 
-        9));
+        15));
 
         a = join(a, plane(ray, // right wall
 
-        vec3(7.0f, 0.0f, 0.0f),
+        vec3(1000.0f, 0.0f, 0.0f),
 
         vec3(-1.0f, 0.0f, 0.0f),
 
-        10));
+        15));
 
         a = join(a, plane(ray, // ceiling
 
-        vec3(0.0f, 7.0f, 0.0f),
+        vec3(0.0f, 1000.0f, 0.0f),
 
         vec3(0.0f, -1.0f, 0.0f),
 
-        13));
+        15));
 
          a = join(a, plane(ray, // floor
 
-        vec3(0.0f, -7.0f, 0.0f),
+        vec3(0.0f, 0.0f, 0.0f),
 
         vec3(0.0f, 1.0f, 0.0f),
 
-        12));
+        10));
 
        
 
         a = join(a, plane(ray, // back
 
-        vec3(0.0f, 0.0f, -7.0f),
+        vec3(0.0f, 0.0f, -1000.0f),
 
         vec3(0.0f, 0.0f, 1.0f),
 
-        11));
+        15));
 
         a = join(a, plane(ray, // front
 
-        vec3(0.0f, 0.0f, 11.0f),
+        vec3(0.0f, 0.0f, 1000.0f),
 
         vec3(0.0f, 0.0f, -1.0f),
 
-        14));
+        15));
         }
 
 
@@ -389,7 +468,7 @@ MapSample map(vec3 ray){
 
         //vec3(0.0f, 0.0f, 0.0f),
 
-        luzpos,
+        vec3(0.0f,10.0f,0.0f),
 
         1.0f,
 
@@ -547,7 +626,7 @@ void main(){
 
     //col = mix(oldcol, col, 1.0 / SAMPLES);
 
-    //col = mix(oldcol, col, 0.3);
+    col = mix(oldcol, col, 0.3);
     imageStore(color, pix, vec4(col, 1.0));
 
 }

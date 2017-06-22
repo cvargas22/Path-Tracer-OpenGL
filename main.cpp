@@ -169,7 +169,7 @@ int main(int argc, char* argv[]){
     }
 
     
-
+    //Carga de propiedades del material
     SDF_BUF sdf_buf;
 
     if(!read_map((float*)&sdf_buf.materials, sizeof(Material) * NUM_MATERIALS, "map.txt")){
@@ -181,7 +181,7 @@ int main(int argc, char* argv[]){
     }
 
     
-
+    //Variables camara
     Camera camera;
 
     camera.resize(WIDTH, HEIGHT);
@@ -211,7 +211,7 @@ int main(int argc, char* argv[]){
 
     GLProgram color("vert.glsl", "frag.glsl");
 
-    ComputeShader depth("depth.glsl");
+    ComputeShader depth("depth2.glsl");
     ComputeShader black("black.glsl");
 
     Texture4f colTex(WIDTH, HEIGHT);
@@ -282,35 +282,38 @@ int main(int argc, char* argv[]){
         glm::vec3 at = camera.getAt();
 
         input.poll(frameBegin(i, t), camera);
+        input.poll(luzpos);
 
         if(!v3_equal(eye, camera.getEye()) || !v3_equal(at, camera.getAt()))
 
             frame = 2;
 
-        
+    
 
         if(((int)(frame) & 31) == 31)
 
             printf("SPP: %f\n", frame);
 
-        if (glfwGetKey (window.getWindow(), GLFW_KEY_P)) {
+        /*if (glfwGetKey (window.getWindow(), GLFW_KEY_P)) {
             on = 1;
             
         }
         if (glfwGetKey (window.getWindow(), GLFW_KEY_O)) {
             on = 0;
             
-        }
+        }*/
 
-        if(glfwGetKey(window.getWindow(),GLFW_KEY_U)){
-            input.poll(luzpos);
-
+        if (glfwGetKey (window.getWindow(), GLFW_KEY_O)) {
+            angulo=0.0;
+            
         }
         else{
             luzpos = glm::vec3(cos(angulo)*radio,0.0, sin(angulo)*radio) + luzoffset;
             angulo+=0.01;
+        }        
 
-        }
+
+    
 
 
         uni.IVP = camera.getIVP();
@@ -328,9 +331,9 @@ int main(int argc, char* argv[]){
         wallbuf.upload(&on, sizeof(on));
         locbuf.upload(&loc, sizeof(loc));
 
-        black.bind();
+        //black.bind();
 
-        black.call(callsizeX, callsizeY, 1);
+        //black.call(callsizeX, callsizeY, 1);
 
         depth.bind();
 
