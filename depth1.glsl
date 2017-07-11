@@ -545,7 +545,7 @@ void main(){
 
     
 
-    //col = mix(oldcol, col, 1.0 / SAMPLES);
+    col = mix(oldcol, col, 1.0 / SAMPLES);
 
     //col = mix(oldcol, col, 0.3);
     imageStore(color, pix, vec4(col, 1.0));

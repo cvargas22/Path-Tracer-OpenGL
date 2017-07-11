@@ -329,13 +329,13 @@ MapSample map(vec3 ray){
 
         11);
 
-        a = join(a, box(ray,    // light
+        a = join(a, box(ray,    
 
         vec3(2.0f, 0.5f, 0.0f),
 
         vec3(2.0f, 1.0f, 2.0f),
 
-        11));    
+        6));    
 
         /*a = join(a, cone(ray,
 
@@ -624,9 +624,9 @@ void main(){
 
     
 
-    //col = mix(oldcol, col, 1.0 / SAMPLES);
+    col = mix(oldcol, col, 1.0 / SAMPLES);
 
-    col = mix(oldcol, col, 0.3);
+    //col = mix(oldcol, col, 0.3);
     imageStore(color, pix, vec4(col, 1.0));
 
 }

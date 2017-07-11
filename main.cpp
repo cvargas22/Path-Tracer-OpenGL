@@ -159,6 +159,8 @@ int main(int argc, char* argv[]){
     int WIDTH = 1280, HEIGHT = 720;
 
     //int WIDTH = 3840, HEIGHT = 2160;
+    int test = 1;
+    string nombre_test = "depth1.glsl";
 
     if(argc == 3){
 
@@ -168,6 +170,20 @@ int main(int argc, char* argv[]){
 
     }
 
+    if(argc == 4){
+        WIDTH = atoi(argv[1]);
+
+        HEIGHT = atoi(argv[2]);
+
+        test = atoi(argv[3]);
+        if(test == 1){
+            nombre_test = "depth1.glsl";
+        }
+        if(test == 2){
+            nombre_test = "depth2.glsl";
+        }
+    }
+    
     
     //Carga de propiedades del material
     SDF_BUF sdf_buf;
@@ -211,7 +227,8 @@ int main(int argc, char* argv[]){
 
     GLProgram color("vert.glsl", "frag.glsl");
 
-    ComputeShader depth("depth2.glsl");
+    ComputeShader depth(nombre_test);
+
     ComputeShader black("black.glsl");
 
     Texture4f colTex(WIDTH, HEIGHT);
@@ -243,7 +260,7 @@ int main(int argc, char* argv[]){
     
 
     // luz y esferas dinamicas dinamica
-    glm::vec3 luzpos(0.0,0.0,-5.0);
+    glm::vec3 luzpos(0.0,5.0,-5.0);
     glm::vec3 luzoffset(0.0,5.0,0.0);
     Esferas loc;
     loc.pos1 = glm::vec3(-1.0,0.0,0.0);
@@ -274,6 +291,7 @@ int main(int argc, char* argv[]){
     float angulo = 0.0f;
 
     float radio = 4.0;
+    bool movLuz = true; //Flag para movimiento de luz
 
     while(window.open()){
 
@@ -281,7 +299,8 @@ int main(int argc, char* argv[]){
 
         glm::vec3 at = camera.getAt();
 
-        input.poll(frameBegin(i, t), camera);
+        //input.poll(frameBegin(i, t), camera);
+
         input.poll(luzpos);
 
         if(!v3_equal(eye, camera.getEye()) || !v3_equal(at, camera.getAt()))
@@ -294,6 +313,7 @@ int main(int argc, char* argv[]){
 
             printf("SPP: %f\n", frame);
 
+        //Sacar paredes
         /*if (glfwGetKey (window.getWindow(), GLFW_KEY_P)) {
             on = 1;
             
@@ -303,18 +323,17 @@ int main(int argc, char* argv[]){
             
         }*/
 
-        if (glfwGetKey (window.getWindow(), GLFW_KEY_O)) {
-            angulo=0.0;
+
+        if(movLuz){
+             luzpos = glm::vec3(cos(angulo)*radio,0.0, sin(angulo)*radio) + luzoffset;
+             angulo+=0.01;
+             
+        }
+
+        if (glfwGetKey (window.getWindow(), GLFW_KEY_U)) {
+            movLuz= false;
             
         }
-        else{
-            luzpos = glm::vec3(cos(angulo)*radio,0.0, sin(angulo)*radio) + luzoffset;
-            angulo+=0.01;
-        }        
-
-
-    
-
 
         uni.IVP = camera.getIVP();
 
@@ -323,9 +342,7 @@ int main(int argc, char* argv[]){
         uni.seed = glm::vec4(rand() * irm, rand() * irm, rand() * irm, frame);
 
         unibuf.upload(&uni, sizeof(uni));
-
-
-        //printf("%f %f\n",cos(angulo)*radio, sin(angulo)*radio );     
+  
 
         posbuf.upload(&luzpos, sizeof(luzpos));
         wallbuf.upload(&on, sizeof(on));
