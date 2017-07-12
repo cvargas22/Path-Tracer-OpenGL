@@ -299,7 +299,7 @@ int main(int argc, char* argv[]){
 
         glm::vec3 at = camera.getAt();
 
-        //input.poll(frameBegin(i, t), camera);
+        input.poll(frameBegin(i, t), camera);
 
         input.poll(luzpos);
 

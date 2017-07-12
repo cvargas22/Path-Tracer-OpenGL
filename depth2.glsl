@@ -321,31 +321,112 @@ vec3 tri(vec3 r, float d){
 
 MapSample map(vec3 ray){
 
+
+        // Casa
+
         MapSample a = triPrism(ray,
 
-        vec3(2.0f, 2.0f, 0.0f),
+        vec3(1.0f, 1.8f, 0.0f),
 
-        vec2(1.0f, 2.0f),
+        vec2(1.0f, 2.2f),
 
         11);
 
         a = join(a, box(ray,    
 
-        vec3(2.0f, 0.5f, 0.0f),
+        vec3(1.0f, 0.5f, 0.0f),
 
-        vec3(2.0f, 1.0f, 2.0f),
+        vec3(0.8f, 0.9f, 2.1f),
 
-        6));    
+        11));
 
-        /*a = join(a, cone(ray,
 
-        vec3(4.0f, 2.0f, 0.0f),
+        // Montañas
 
-        vec3(1.0f, 0.5f,4.0f),
+        a = join(a, sphere(ray, // chrome spheres
 
-        12));
+        vec3(-30.0f,0.0f,0.0f),
+
+        6.0f,
+
+        11));
+
+        a = join(a, sphere(ray, // chrome spheres
+
+        vec3(-25.0f,0.0f,-10.0f),
+
+        6.5f,
+
+        11));
+
+        a = join(a, sphere(ray, // chrome spheres
+
+        vec3(-20.0f,0.0f,-20.0f),
+
+        5.5f,
+
+        11));
+
+        a = join(a, sphere(ray, // chrome spheres
+
+        vec3(-10.0f,0.0f,-25.0f),
+
+        7.5f,
+
+        11));
+
+        a = join(a, sphere(ray, // chrome spheres
+
+        vec3(2.0f,0.0f,-25.0f),
+
+        7.5f,
+
+        11));
+
+         a = join(a, sphere(ray, // chrome spheres
+
+        vec3(15.0f,0.0f,-25.0f),
+
+        7.5f,
+
+        11));
+
+        a = join(a, sphere(ray, // chrome spheres
+
+        vec3(25.0f,0.0f,-18.0f),
+
+        5.5f,
+
+        11));
+        a = join(a, sphere(ray, // chrome spheres
+
+        vec3(35.0f,0.0f,-10.0f),
+
+        8.5f,
+
+        11));
 
         
+        // Arboles
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(-4.0f, 0.4f, 0.0f),
+
+        vec2(0.1f, 0.6f),
+
+        11));
+         
+        a = join(a, cone(ray,
+
+        vec3(-4.0f, 2.4f, 0.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        11));
+
+
+
+        /*
         a = join(a, cylinderCap(ray,
 
         vec3(-2.0f, 4.0f, 0.0f),
@@ -363,40 +444,8 @@ MapSample map(vec3 ray){
 
         13));*/
 
-        /*
-         
-        a = join(a, sphere(ray, // chrome spheres
 
-        vec3(3.0f, 3.0f, 0.0f),
-
-        1.0f,
-
-        12));
-       
-        a = join(a, sphere(ray, // chrome spheres
-
-        vec3(5.0f, 0.0f, 0.0f),
-
-        1.0f,
-
-        12));
-
-        a = join(a, sphere(ray, // chrome spheres
-
-        vec3(0.0f, 0.0f, -5.0f),
-
-        1.0f,
-
-        5));
-
-        a = join(a, sphere(ray, // chrome spheres
-
-        vec3(1.0f, 0.0f, 0.0f),
-
-        1.0f,
-
-        4));*/
-
+        // Sandbox
 
         if(on == 0){
         a = join(a, plane(ray, // left wall
@@ -451,24 +500,13 @@ MapSample map(vec3 ray){
         }
 
 
-        /* CAJA
 
-        a = join(a, box(ray,    // light
 
-        vec3(0.0f, 4.75f, 0.0f),
-
-        vec3(2.0f, .1f, 4.0f),
-
-        0));
-
-        */
-        
+        // Fuente de luz
 
         a = join(a, sphere(ray, // light
 
-        //vec3(0.0f, 0.0f, 0.0f),
-
-        vec3(0.0f,10.0f,0.0f),
+        vec3(0.0f,30.0f,0.0f),
 
         1.0f,
 
