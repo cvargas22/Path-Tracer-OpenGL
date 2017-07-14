@@ -355,7 +355,7 @@ int main(int argc, char* argv[]){
         depth.bind();
 
         depth.call(callsizeX, callsizeY, 1);
-// 
+
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
         

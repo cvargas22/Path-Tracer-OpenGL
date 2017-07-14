@@ -56,7 +56,7 @@ layout(binding=6) uniform LOC_BUF
 
 #define CBOUNCES 6
 
-#define CSAMPLES 1000
+#define CSAMPLES 45
 
 struct Material{
 

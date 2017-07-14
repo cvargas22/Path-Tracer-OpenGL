@@ -54,7 +54,7 @@ layout(binding=6) uniform LOC_BUF
 
 #define SAMPLES seed.w
 
-#define CBOUNCES 6
+#define CBOUNCES 2
 
 #define CSAMPLES 1000
 
@@ -349,7 +349,7 @@ MapSample map(vec3 ray){
 
         6.0f,
 
-        11));
+        17));
 
         a = join(a, sphere(ray, // chrome spheres
 
@@ -357,7 +357,7 @@ MapSample map(vec3 ray){
 
         6.5f,
 
-        11));
+        17));
 
         a = join(a, sphere(ray, // chrome spheres
 
@@ -365,7 +365,7 @@ MapSample map(vec3 ray){
 
         5.5f,
 
-        11));
+        17));
 
         a = join(a, sphere(ray, // chrome spheres
 
@@ -373,7 +373,7 @@ MapSample map(vec3 ray){
 
         7.5f,
 
-        11));
+        17));
 
         a = join(a, sphere(ray, // chrome spheres
 
@@ -381,7 +381,7 @@ MapSample map(vec3 ray){
 
         7.5f,
 
-        11));
+        17));
 
          a = join(a, sphere(ray, // chrome spheres
 
@@ -389,7 +389,7 @@ MapSample map(vec3 ray){
 
         7.5f,
 
-        11));
+        17));
 
         a = join(a, sphere(ray, // chrome spheres
 
@@ -397,14 +397,14 @@ MapSample map(vec3 ray){
 
         5.5f,
 
-        11));
+        17));
         a = join(a, sphere(ray, // chrome spheres
 
         vec3(35.0f,0.0f,-10.0f),
 
         8.5f,
 
-        11));
+        17));
 
         
         // Arboles
@@ -422,27 +422,73 @@ MapSample map(vec3 ray){
         vec3(-4.0f, 2.4f, 0.0f), //Posicion
         vec3(1.0f, 0.3f,1.4f), //Dimensiones
 
-        11));
+        16));
 
 
-
-        /*
         a = join(a, cylinderCap(ray,
 
-        vec3(-2.0f, 4.0f, 0.0f),
+        vec3(-6.0f, 0.4f, 1.0f),
 
-        vec2(1.3f, 2.0f),
+        vec2(0.1f, 0.6f),
 
         11));
+         
+        a = join(a, cone(ray,
+
+        vec3(-6.0f, 2.4f, 1.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
 
 
-        a = join(a, sphere(ray, // chrome spheres
+        a = join(a, cylinderCap(ray,
 
-        vec3(-4.0f,2.0f,0.0f),
+        vec3(-8.0f, 0.4f, 2.0f),
 
-        1.0f,
+        vec2(0.1f, 0.6f),
 
-        13));*/
+        11));
+         
+        a = join(a, cone(ray,
+
+        vec3(-8.0f, 2.4f, 2.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
+
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(8.0f, 0.4f, 2.0f),
+
+        vec2(0.1f, 0.6f),
+
+        11));
+         
+        a = join(a, cone(ray,
+
+        vec3(8.0f, 2.4f, 2.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
+
+         a = join(a, cylinderCap(ray,
+
+        vec3(6.0f, 0.4f, 1.0f),
+
+        vec2(0.1f, 0.6f),
+
+        11));
+         
+        a = join(a, cone(ray,
+
+        vec3(6.0f, 2.4f, 1.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
 
 
         // Sandbox
@@ -506,7 +552,7 @@ MapSample map(vec3 ray){
 
         a = join(a, sphere(ray, // light
 
-        vec3(0.0f,30.0f,0.0f),
+        vec3(50.0f,10.0f,0.0f),
 
         1.0f,
 
