@@ -161,27 +161,30 @@ int main(int argc, char* argv[]){
     //int WIDTH = 3840, HEIGHT = 2160;
     int test = 1;
     string nombre_test = "depth1.glsl";
+    int calidad = 1;
 
-    if(argc == 3){
 
-        WIDTH = atoi(argv[1]);
+    if(argc == 5){
 
-        HEIGHT = atoi(argv[2]);
-
-    }
-
-    if(argc == 4){
         WIDTH = atoi(argv[1]);
 
         HEIGHT = atoi(argv[2]);
 
         test = atoi(argv[3]);
+
         if(test == 1){
             nombre_test = "depth1.glsl";
         }
         if(test == 2){
             nombre_test = "depth2.glsl";
         }
+
+        calidad = atoi(argv[4]);
+
+    }
+    else{
+        printf("%s\n", "Ejecutar como ./Renderer.exe WIDTH HEIGHT escenario calidad");
+        exit(EXIT_FAILURE);
     }
     
     
@@ -273,6 +276,8 @@ int main(int argc, char* argv[]){
     //switch paredes
     int on = 0;
 
+    UBO calbuf(&calidad,sizeof(calidad), 7);
+
     UBO posbuf(&luzpos, sizeof(luzpos), 4);
     
     UBO wallbuf(&on, sizeof(on), 5);
@@ -347,6 +352,7 @@ int main(int argc, char* argv[]){
         posbuf.upload(&luzpos, sizeof(luzpos));
         wallbuf.upload(&on, sizeof(on));
         locbuf.upload(&loc, sizeof(loc));
+        calbuf.upload(&calidad, sizeof(calidad));
 
         //black.bind();
 

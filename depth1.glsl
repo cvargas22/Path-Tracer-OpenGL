@@ -42,6 +42,11 @@ layout(binding=6) uniform LOC_BUF
 
 };
 
+layout(binding=7) uniform CAL_BUF
+{
+    int calidad;
+};
+
 #define EYE eye.xyz
 
 #define NEAR nfwh.x
@@ -360,7 +365,7 @@ MapSample map(vec3 ray){
 
         vec3(0.0f, 0.0f, 1.0f),
 
-        11));
+        13));
 
         a = join(a, plane(ray, // front
 
@@ -532,8 +537,22 @@ void main(){
 
     float a = luzpos.x;
 
+
+    vec3 col = vec3(0.0,0.0, 0.0);
+
+
+    for(int i = 0; i < calidad; i++){ // QIND
+
+        col += clamp(trace(rd, EYE, s), vec3(0.0), vec3(1.0));
+
+    }
+    col = col/calidad;
     
-    vec3 col = clamp(trace(rd, EYE, s), vec3(0.0), vec3(1.0));
+
+
+    //Linea Original
+
+    //vec3 col = clamp(trace(rd, EYE, s), vec3(0.0), vec3(1.0));
 
     // linea original
 
@@ -545,7 +564,7 @@ void main(){
 
     
 
-    col = mix(oldcol, col, 1.0 / SAMPLES);
+    //col = mix(oldcol, col, 1.0 / SAMPLES);
 
     //col = mix(oldcol, col, 0.3);
     imageStore(color, pix, vec4(col, 1.0));
