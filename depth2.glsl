@@ -42,6 +42,11 @@ layout(binding=6) uniform LOC_BUF
 
 };
 
+layout(binding=7) uniform CAL_BUF
+{
+    int calidad;
+};
+
 #define EYE eye.xyz
 
 #define NEAR nfwh.x
@@ -54,9 +59,9 @@ layout(binding=6) uniform LOC_BUF
 
 #define SAMPLES seed.w
 
-#define CBOUNCES 2
+#define CBOUNCES 6
 
-#define CSAMPLES 1000
+#define CSAMPLES 45
 
 struct Material{
 
@@ -321,7 +326,9 @@ vec3 tri(vec3 r, float d){
 
 MapSample map(vec3 ray){
 
-
+        
+        //vec3 sunCol =  6.0*vec3(1.0,0.8,0.6);
+        //vec3 skyCol =  4.0*vec3(0.2,0.35,0.5);
         // Casa
 
         MapSample a = triPrism(ray,
@@ -330,7 +337,7 @@ MapSample map(vec3 ray){
 
         vec2(1.0f, 2.2f),
 
-        11);
+        18);
 
         a = join(a, box(ray,    
 
@@ -338,8 +345,9 @@ MapSample map(vec3 ray){
 
         vec3(0.8f, 0.9f, 2.1f),
 
-        11));
+        9));
 
+       
 
         // Montañas
 
@@ -668,8 +676,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
             break;
 
     }
-
-    
+ 
 
     return col;
 
@@ -695,20 +702,26 @@ void main(){
 
     float a = luzpos.x;
 
+    vec3 col = vec3(0.0,0.0, 0.0);
+
+    for(int i = 0; i < calidad; i++){ // QIND
+
+        col += clamp(trace(rd, EYE, s), vec3(0.0), vec3(1.0));
+
+    }
+    col = col/calidad;
     
-    vec3 col = clamp(trace(rd, EYE, s), vec3(0.0), vec3(1.0));
+
+    //linea original
+
+    //vec3 col = clamp(trace(rd, EYE, s), vec3(0.0), vec3(1.0));
 
     // linea original
 
     vec3 oldcol = imageLoad(color, pix).rgb;
 
-    // linea de prueba
 
-    //vec3 oldcol = imageLoad(color, pix).rgb + vec3(a, 0.0f, 0.0f);
-
-    
-
-    col = mix(oldcol, col, 1.0 / SAMPLES);
+    //col = mix(oldcol, col, 1.0 / SAMPLES);
 
     //col = mix(oldcol, col, 0.3);
     imageStore(color, pix, vec4(col, 1.0));

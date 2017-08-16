@@ -537,9 +537,7 @@ void main(){
 
     float a = luzpos.x;
 
-
     vec3 col = vec3(0.0,0.0, 0.0);
-
 
     for(int i = 0; i < calidad; i++){ // QIND
 
@@ -558,11 +556,6 @@ void main(){
 
     vec3 oldcol = imageLoad(color, pix).rgb;
 
-    // linea de prueba
-
-    //vec3 oldcol = imageLoad(color, pix).rgb + vec3(a, 0.0f, 0.0f);
-
-    
 
     //col = mix(oldcol, col, 1.0 / SAMPLES);
 
