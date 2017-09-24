@@ -178,6 +178,12 @@ int main(int argc, char* argv[]){
         if(test == 2){
             nombre_test = "depth2.glsl";
         }
+        if(test == 3){
+            nombre_test = "test3.glsl";
+        }
+        if(test == 4){
+            nombre_test = "test4.glsl";
+        }
 
         calidad = atoi(argv[4]);
 

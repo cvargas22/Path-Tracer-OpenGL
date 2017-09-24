@@ -1,0 +1,15 @@
+- los primeros 4 valores son para reflectance, los siguientes 4 para emittance
+
+- reflectance nos permite definir los colores de nuestros objetos
+
+- emittance nos permite definir que objetos emiten luz (cielo y sol)
+
+- el ultimo valor de emittance nos permite definir patrones especular y reflejo
+
+- las primeras 15 lineas de map.txt se utilizan en escenario 1
+ //definir colores para estas lineas
+
+linea 16: esfera roja
+linea 17: suelo verde
+linea 18:
+linea 19:

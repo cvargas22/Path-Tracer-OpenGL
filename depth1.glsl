@@ -71,7 +71,7 @@ struct Material{
 
 layout(binding=3) buffer SDF_BUF{   
 
-    Material materials[16];
+    Material materials[18];
 
 };
 
@@ -347,7 +347,7 @@ MapSample map(vec3 ray){
 
         vec3(0.0f, -1.0f, 0.0f),
 
-        13));
+        11));
 
          a = join(a, plane(ray, // floor
 
@@ -462,9 +462,6 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
     for(int i = 0; i < CBOUNCES; i++){    // bounces
 
         MapSample sam;
-
-        
-
         for(int j = 0; j < CSAMPLES; j++){ // steps
 
             sam = map(eye);
@@ -478,8 +475,6 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
             eye = eye + rd * sam.distance;
 
         }
-
-        
 
         vec3 N = map_normal(eye);
 
@@ -496,8 +491,6 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
             eye += N * e * 10.0f;
 
         }
-
-        
 
         col += mask * materials[sam.matid].emittance.rgb;
 

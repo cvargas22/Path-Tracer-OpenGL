@@ -59,7 +59,7 @@ layout(binding=7) uniform CAL_BUF
 
 #define SAMPLES seed.w
 
-#define CBOUNCES 6
+#define CBOUNCES 3
 
 #define CSAMPLES 45
 
@@ -332,243 +332,29 @@ MapSample map(vec3 ray){
         
         // Casa
 
-        MapSample a = triPrism(ray,
+        MapSample a = sphere(ray, // chrome spheres
 
-        vec3(1.0f, 1.8f, 0.0f),
+        vec3(0.0f,10.0f, 0.0f),
 
-        vec2(1.0f, 2.2f),
+        1.0f,
 
-        18);
+        14);
 
-        a = join(a, box(ray,    
-
-        vec3(1.0f, 0.5f, 0.0f),
-
-        vec3(0.8f, 0.9f, 2.1f),
-
-        9));
-
-       
-
-        // Montañas
-
-        a = join(a, sphere(ray, // chrome spheres
-
-        vec3(-30.0f,0.0f,0.0f),
-
-        6.0f,
-
-        17));
-
-        a = join(a, sphere(ray, // chrome spheres
-
-        vec3(-25.0f,0.0f,-10.0f),
-
-        6.5f,
-
-        17));
-
-        a = join(a, sphere(ray, // chrome spheres
-
-        vec3(-20.0f,0.0f,-20.0f),
-
-        5.5f,
-
-        17));
-
-        a = join(a, sphere(ray, // chrome spheres
-
-        vec3(-10.0f,0.0f,-25.0f),
-
-        7.5f,
-
-        17));
-
-        a = join(a, sphere(ray, // chrome spheres
-
-        vec3(2.0f,0.0f,-25.0f),
-
-        7.5f,
-
-        17));
-
-         a = join(a, sphere(ray, // chrome spheres
-
-        vec3(15.0f,0.0f,-25.0f),
-
-        7.5f,
-
-        17));
-
-        a = join(a, sphere(ray, // chrome spheres
-
-        vec3(25.0f,0.0f,-18.0f),
-
-        5.5f,
-
-        17));
-        a = join(a, sphere(ray, // chrome spheres
-
-        vec3(35.0f,0.0f,-10.0f),
-
-        8.5f,
-
-        17));
-
-        
-        // Arboles
-
-        a = join(a, cylinderCap(ray,
-
-        vec3(-4.0f, 0.4f, 0.0f),
-
-        vec2(0.1f, 0.6f),
-
-        11));
-         
-        a = join(a, cone(ray,
-
-        vec3(-4.0f, 2.4f, 0.0f), //Posicion
-        vec3(1.0f, 0.3f,1.4f), //Dimensiones
-
-        16));
-
-
-        a = join(a, cylinderCap(ray,
-
-        vec3(-6.0f, 0.4f, 1.0f),
-
-        vec2(0.1f, 0.6f),
-
-        11));
-         
-        a = join(a, cone(ray,
-
-        vec3(-6.0f, 2.4f, 1.0f), //Posicion
-        vec3(1.0f, 0.3f,1.4f), //Dimensiones
-
-        16));
-
-
-        a = join(a, cylinderCap(ray,
-
-        vec3(-8.0f, 0.4f, 2.0f),
-
-        vec2(0.1f, 0.6f),
-
-        11));
-         
-        a = join(a, cone(ray,
-
-        vec3(-8.0f, 2.4f, 2.0f), //Posicion
-        vec3(1.0f, 0.3f,1.4f), //Dimensiones
-
-        16));
-
-
-
-        a = join(a, cylinderCap(ray,
-
-        vec3(8.0f, 0.4f, 2.0f),
-
-        vec2(0.1f, 0.6f),
-
-        11));
-         
-        a = join(a, cone(ray,
-
-        vec3(8.0f, 2.4f, 2.0f), //Posicion
-        vec3(1.0f, 0.3f,1.4f), //Dimensiones
-
-        16));
-
-
-         a = join(a, cylinderCap(ray,
-
-        vec3(6.0f, 0.4f, 1.0f),
-
-        vec2(0.1f, 0.6f),
-
-        11));
-         
-        a = join(a, cone(ray,
-
-        vec3(6.0f, 2.4f, 1.0f), //Posicion
-        vec3(1.0f, 0.3f,1.4f), //Dimensiones
-
-        16));
-
-
-
-        // Sandbox
     
-        if(on == 0){
-        a = join(a, plane(ray, // left wall
+        // Sandbox
 
-        vec3(-1000.0f, 0.0f, 0.0f),
-
-        vec3(1.0f, 0.0f, 0.0f),
-
-        15));
-
-        a = join(a, plane(ray, // right wall
-
-        vec3(1000.0f, 0.0f, 0.0f),
-
-        vec3(-1.0f, 0.0f, 0.0f),
-
-        15));
-
-        a = join(a, plane(ray, // ceiling
-
-        vec3(0.0f, 1000.0f, 0.0f),
-
-        vec3(0.0f, -1.0f, 0.0f),
-
-        15));
-
-        a = join(a, plane(ray, // back
-
-        vec3(0.0f, 0.0f, -1000.0f),
-
-        vec3(0.0f, 0.0f, 1.0f),
-
-        15));
-
-        a = join(a, plane(ray, // front
-
-        vec3(0.0f, 0.0f, 1000.0f),
-
-        vec3(0.0f, 0.0f, -1.0f),
-
-        15));
-
-
-         a = join(a, plane(ray, // floor
+        a = join(a, plane(ray, // floor
 
         vec3(0.0f, 0.0f, 0.0f),
 
         vec3(0.0f, 1.0f, 0.0f),
 
-        10));
+        14));
 
-       
-        }
-
-
-
-        // Fuente de luz
-
-        a = join(a, sphere(ray, // light
-
-        vec3(0.0f,30.0f,0.0f),
-
-        1.0f,
-
-        0));
 
         
         return a;
+    
     
         
 
@@ -616,62 +402,69 @@ float absum(vec3 a){
 
 }
 
+vec3 sunDir = normalize(vec3(-0.3,1.3,0.1));
+vec3 sunCol =  6.0*vec3(1.0,0.8,0.6);
+vec3 skyCol =  4.0*vec3(0.2,0.35,0.5);
+
 vec3 trace(vec3 rd, vec3 eye, inout uint s){
     
-    // sky color: materials[15]
-    // sunlight color: materials[10]
 
     float e = 0.001;
-    float tmax = 1000.0f;
-    //materials[10].emittance.rgb = vec3(1.0,0.0,0.0);
+
     vec3 col = vec3(0.0, 0.0, 0.0);
 
     vec3 mask = vec3(1.0, 1.0, 1.0);
 
-    
+    float fdis = 0.0;  
 
     for(int i = 0; i < CBOUNCES; i++){    // bounces
 
         MapSample sam;
 
-        
+        float res = -1.0;
+        float tmax = 100.0;
+        float t = 0.01;
 
         for(int j = 0; j < CSAMPLES; j++){ // steps
 
             sam = map(eye);
 
-            if(abs(sam.distance) < e || abs(sam.distance) > tmax){
-
-                // We didn't hit anything, return the sky color
-               
-                break; 
-            }
+            if(abs(sam.distance) < e || t > tmax) break;
+            t += abs(sam.distance);
 
 
-
+            //Verificar posicion
             eye = eye + rd * sam.distance;
 
         }
 
-        /*if(abs(sam.distance) > tmax){
+        float sundot = clamp(dot(rd, sunDir),0.0,1.0);
 
-            // sky       
-            col = vec3(0.2,0.5,0.85)*1.1 - rd.y*rd.y*0.5;
-            col = mix( col, 0.85*vec3(0.7,0.75,0.85), pow( 1.0-max(rd.y,0.0), 4.0 ) );
-            // sun
-            col += 0.25*vec3(1.0,0.7,0.4)*pow( sundot,5.0 );
-            col += 0.25*vec3(1.0,0.8,0.6)*pow( sundot,64.0 );
-            col += 0.2*vec3(1.0,0.8,0.6)*pow( sundot,512.0 );
-            // clouds
-            vec2 sc = ro.xz + rd.xz*(SC*1000.0-ro.y)/rd.y;
-            col = mix( col, vec3(1.0,0.95,1.0), 0.5*smoothstep(0.5,0.8,fbm(0.0005*sc/SC)) );
-            // horizon
-            col = mix( col, 0.68*vec3(0.4,0.65,1.0), pow( 1.0-max(rd.y,0.0), 16.0 ) );
-            t = -1.0;
+        if(t < tmax) res = t;
+
+
+        if( res < 0.0 ){
+            if( i==0 ){
+
+                // sky
+                col = vec3(0.2,0.5,0.85)*1.1 - rd.y*rd.y*0.5;
+                col = mix( col, 0.85*vec3(0.7,0.75,0.85), pow( 1.0-max(rd.y,0.0), 4.0 ) );
+                
+                // sun
+                col += 0.25*vec3(1.0,0.7,0.4)*pow( sundot,5.0 );
+                col += 0.25*vec3(1.0,0.8,0.6)*pow( sundot,64.0 );
+                col += 0.2*vec3(1.0,0.8,0.6)*pow( sundot,512.0 );
+           
+            }
             break;
-        }*/
+        }
 
-        vec3 N = map_normal(eye);
+        if( i==0 ) fdis = res;
+
+        vec3 pos = eye + rd * res;
+
+
+        vec3 N = map_normal(pos);
 
         
 
@@ -698,7 +491,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
 
             break;
 
-
+        eye = pos;
     }
  
 
