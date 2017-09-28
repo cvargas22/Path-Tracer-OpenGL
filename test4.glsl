@@ -198,52 +198,6 @@ vec3 cosHemi(vec3 N, inout uint s){
 }
 
 
-float hash(float seed)
-{
-    return fract(sin(seed)*43758.5453 );
-}
-
-vec3 cosineDirection( in float seed, in vec3 nor)
-{
-    float u = hash( 78.233 + seed);
-    float v = hash( 10.873 + seed);
-
-    
-    // Method 1 and 2 first generate a frame of reference to use with an arbitrary
-    // distribution, cosine in this case. Method 3 (invented by fizzer) specializes 
-    // the whole math to the cosine distribution and simplfies the result to a more 
-    // compact version that does not depend on a full frame of reference.
-
-    #if 0
-        // method 1 by http://orbit.dtu.dk/fedora/objects/orbit:113874/datastreams/file_75b66578-222e-4c7d-abdf-f7e255100209/content
-        vec3 tc = vec3( 1.0+nor.z-nor.xy*nor.xy, -nor.x*nor.y)/(1.0+nor.z);
-        vec3 uu = vec3( tc.x, tc.z, -nor.x );
-        vec3 vv = vec3( tc.z, tc.y, -nor.y );
-
-        float a = 6.2831853 * v;
-        return sqrt(u)*(cos(a)*uu + sin(a)*vv) + sqrt(1.0-u)*nor;
-    #endif
-    #if 0
-        // method 2 by pixar:  http://jcgt.org/published/0006/01/01/paper.pdf
-        float ks = (nor.z>=0.0)?1.0:-1.0;     //do not use sign(nor.z), it can produce 0.0
-        float ka = 1.0 / (1.0 + abs(nor.z));
-        float kb = -ks * nor.x * nor.y * ka;
-        vec3 uu = vec3(1.0 - nor.x * nor.x * ka, ks*kb, -ks*nor.x);
-        vec3 vv = vec3(kb, ks - nor.y * nor.y * ka * ks, -nor.y);
-    
-        float a = 6.2831853 * v;
-        return sqrt(u)*(cos(a)*uu + sin(a)*vv) + sqrt(1.0-u)*nor;
-    #endif
-    #if 1
-        // method 3 by fizzer: http://www.amietia.com/lambertnotangent.html
-        float a = 6.2831853 * v;
-        u = 2.0*u - 1.0;
-        return normalize( nor + vec3(sqrt(1.0-u*u) * vec2(cos(a), sin(a)), u) );
-    #endif
-}
-
-
-
 float vmax(vec3 a){
 
     return max(max(a.x, a.y), a.z);
@@ -342,14 +296,6 @@ MapSample join(MapSample a, MapSample b){
     return b;
 
 }
-
-//rotacion
-/*vec3 opTx(vec3 ray, vec3 location, mat4 m )
-{
-    vec3 p = ray - location;
-    vec3 q = invert(m)*p;
-    return primitive(q);
-}*/
 
 
 float diff(MapSample a, MapSample b){
@@ -661,7 +607,6 @@ vec3 skyCol =  2.0*vec3(0.2,0.35,0.5);
 vec3 trace(vec3 rd, vec3 eye, inout uint s){
     
     float e = 0.001;
-    float fdis = 0.0;
     vec3 col = vec3(0.0, 0.0, 0.0);
     vec3 mask = vec3(1.0, 1.0, 1.0);
 
@@ -704,21 +649,14 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
                 col += 0.2*vec3(1.0,0.8,0.6)*pow( sundot,512.0 );
             }
             else{
-                col = col*5;
+                col = col*2;
             }
             break;
             
         }
 
-        if( i==0 ) fdis = t;
-
-        //vec3 pos = eye + rd * t;
-        //eye = eye + rd * t;
-
         vec3 N = map_normal(eye);
 
-
-    
 
         vec3 iColor = vec3(0.0, 0.0, 0.0);
 
@@ -738,9 +676,9 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
         float skySha = shadow( eye + N*e, skyPoint, sam);
         iColor += skyCol * skySha;
 
-        col += mask * materials[sam.matid].emittance.rgb * iColor;
+        col += mask * materials[sam.matid].emittance.rgb;
         col += mask * iColor * materials[sam.matid].reflectance.rgb;
-        mask *=  1.6 * materials[sam.matid].reflectance.rgb * abs(dot(N, rd));
+        mask *=  2.0 * materials[sam.matid].reflectance.rgb * abs(dot(N, rd));
 
     
         {   // update direction
@@ -759,12 +697,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
 
     }
 
-    /*
-    float ff = exp(-0.01*fdis*fdis);
-    col *= ff; 
-    col += (1.0-ff)*0.05*vec3(0.9,1.0,1.0);
-    */
-
+   
     return col;
 
 }
@@ -803,9 +736,8 @@ void main(){
     col = col/calidad;
 
 
-    col = pow( col, vec3(0.8,0.85,0.9) );
+    //col = pow( col, vec3(0.8,0.85,0.9) );
     
-    //col *= 0.5 + 0.5*pow( 16.0*uv.x*uv.y*(1.0-uv.x)*(1.0-uv.y), 0.1 );
     
     imageStore(color, pix, vec4(col, 1.0));
 
