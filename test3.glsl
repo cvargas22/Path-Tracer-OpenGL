@@ -61,7 +61,7 @@ layout(binding=7) uniform CAL_BUF
 
 #define CBOUNCES 3
 
-#define CSAMPLES 256
+#define CSAMPLES 512
 
 struct Material{
 
@@ -409,7 +409,7 @@ MapSample map(vec3 ray){
         16));
 
         a = join(a,sphere(ray,
-        vec3(0.0f,8.0f, 0.0f),
+        vec3(0.0f,9.0f, 0.0f),
         1.0f,
         17));
 
@@ -505,7 +505,7 @@ float shadow(vec3 ro,vec3 rd, MapSample h)
 //Sun and Sky variables
 vec3 sunDir = normalize(vec3(-0.3,1.3,0.1));
 vec3 sunCol = materials[0].emittance.rgb; 
-vec3 skyCol =  1.0*vec3(0.2,0.35,0.5);
+vec3 skyCol =  2.0*vec3(0.2,0.35,0.5);
 
 
 vec3 trace(vec3 rd, vec3 eye, inout uint s){
@@ -621,6 +621,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
 
 void main(){
 
+
     ivec2 pix = ivec2(gl_GlobalInvocationID.xy);  
 
     ivec2 size = imageSize(color);
@@ -636,6 +637,7 @@ void main(){
 
     vec2 uv = (vec2(pix + aa) / vec2(size))* 2.0 - 1.0;
 
+
     vec3 rd = normalize(toWorld(uv.x, uv.y, 0.0) - EYE); //random direction
 
     float a = luzpos.x;
@@ -647,10 +649,14 @@ void main(){
         col += clamp(trace(rd, EYE, s), vec3(0.0), vec3(1.0));
 
     }
-    col = col/calidad;
-    
-    vec3 oldcol = imageLoad(color, pix).rgb;
 
+    col = col/calidad;
+
+
+    col = pow( col, vec3(0.8,0.85,0.9) );
+    
+    //col *= 0.5 + 0.5*pow( 16.0*uv.x*uv.y*(1.0-uv.x)*(1.0-uv.y), 0.1 );
+    
     imageStore(color, pix, vec4(col, 1.0));
 
 }

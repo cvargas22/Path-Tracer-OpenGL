@@ -544,7 +544,7 @@ MapSample map(vec3 ray){
         15));
 
 
-         a = join(a, plane(ray, // floor
+        a = join(a, plane(ray, // floor
 
         vec3(0.0f, 0.0f, 0.0f),
 
