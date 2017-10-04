@@ -47,6 +47,13 @@ layout(binding=7) uniform CAL_BUF
     int calidad;
 };
 
+layout(binding=8) uniform DIR_BUF
+{
+    vec3 luzdir;
+};
+
+
+
 #define EYE eye.xyz
 
 #define NEAR nfwh.x
@@ -346,11 +353,11 @@ MapSample map(vec3 ray){
 
         MapSample a = sphere(ray, // chrome spheres
 
-        vec3(0.0f,5.0f, 0.0f),
+        vec3(0.0f,1.0f, 0.0f),
 
         1.0f,
 
-        15);
+        15); //rojo
 
     
         // Ground
@@ -361,12 +368,29 @@ MapSample map(vec3 ray){
 
         vec3(0.0f, 1.0f, 0.0f),
 
-        16));
+        16)); //verde
 
         a = join(a,sphere(ray,
-        vec3(0.0f,9.0f, 0.0f),
+        vec3(0.5f,4.0f, 0.0f),
         1.0f,
-        17));
+        4)); //blanca
+
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(-1.0f, 0.4f, 5.0f),
+
+        vec2(0.4f, 1.6f),
+
+        19));
+
+        a = join(a, box(ray,    
+
+        vec3(-4.0f, 0.5f, 0.0f),
+
+        vec3(0.8f, 0.9f, 2.1f),
+
+        19));
 
         
         return a;
@@ -458,10 +482,10 @@ float shadow(vec3 ro,vec3 rd, MapSample h)
  
 
 //Sun and Sky variables
-vec3 sunDir = normalize(vec3(-0.3,1.3,0.1));
+vec3 sunDir = normalize(luzdir);
 vec3 sunCol = materials[0].emittance.rgb; 
 vec3 skyCol =  2.0*vec3(0.2,0.35,0.5);
-
+float cal = 0.02; //calibracion colores
 
 vec3 trace(vec3 rd, vec3 eye, inout uint s){
     
@@ -471,7 +495,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
     vec3 mask = vec3(1.0, 1.0, 1.0);
 
 
-    for(int i = 0; i < 3; i++){    // bounces
+    for(int i = 0; i < 8; i++){    // bounces
 
         MapSample sam;
 
@@ -544,8 +568,8 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
         iColor += skyCol * skySha;
 
         col += mask * materials[sam.matid].emittance.rgb;
-        col += mask * iColor * materials[sam.matid].reflectance.rgb;
-        mask *=  2.0 * materials[sam.matid].reflectance.rgb * abs(dot(N, rd));
+        col +=  mask * iColor * materials[sam.matid].reflectance.rgb;
+        mask *=  cal * 2.0 * materials[sam.matid].reflectance.rgb * abs(dot(N, rd));
 
     
         {   // update direction
@@ -555,6 +579,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
             rd = cosHemi(N, s);
 
             rd = roughBlend(rd, oldir, N, sam.matid);
+
             eye += N * e * 10.0f;
     
         }

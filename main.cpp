@@ -268,9 +268,15 @@ int main(int argc, char* argv[]){
 
     
 
-    // luz y esferas dinamicas dinamica
+    // luz y esferas dinamicas ESCENARIO 1
     glm::vec3 luzpos(0.0,5.0,-5.0);
     glm::vec3 luzoffset(0.0,5.0,0.0);
+
+    // luz ESCENARIO 2
+    glm::vec3 luzdir(-0.3, 1.3, 0.5);
+    glm::vec3 diroffset(0.0,1.3,0.5);
+
+    //Posicion esferas
     Esferas loc;
     loc.pos1 = glm::vec3(-1.0,0.0,0.0);
     loc.pos2 = glm::vec3(-5.0,0.0,0.0);
@@ -288,6 +294,10 @@ int main(int argc, char* argv[]){
     
     UBO wallbuf(&on, sizeof(on), 5);
 
+    UBO dirbuf(&luzdir, sizeof(luzdir), 8);
+
+
+
 
     input.poll();
 
@@ -299,10 +309,19 @@ int main(int argc, char* argv[]){
 
     float t = (float)glfwGetTime();
 
+    //Variables movimiento de luz en escenario 1
     float angulo = 0.0f;
 
     float radio = 4.0;
+    
     bool movLuz = true; //Flag para movimiento de luz
+
+    //Variables movimiento de luz en escenario 1
+    float angulo2 = 0.0f;
+
+    float radio2 = 10.0;
+
+ 
 
     while(window.open()){
 
@@ -336,7 +355,7 @@ int main(int argc, char* argv[]){
 
 
         if(movLuz){
-             luzpos = glm::vec3(cos(angulo)*radio,0.0, sin(angulo)*radio) + luzoffset;
+             luzpos = glm::vec3(cos(angulo)*radio,0.0, sin(angulo)*radio) + luzoffset; //movimiento de luz en test 1
              angulo+=0.01;
              
         }
@@ -345,6 +364,9 @@ int main(int argc, char* argv[]){
             movLuz= false;
             
         }
+
+        luzdir = glm::vec3(cos(angulo2)*radio2, sin(angulo2)*radio2, 0.0) + diroffset; // movimiento de luz en test 3 y 4
+        angulo2+=0.01;
 
         uni.IVP = camera.getIVP();
 
@@ -359,6 +381,7 @@ int main(int argc, char* argv[]){
         wallbuf.upload(&on, sizeof(on));
         locbuf.upload(&loc, sizeof(loc));
         calbuf.upload(&calidad, sizeof(calidad));
+        dirbuf.upload(&luzdir, sizeof(luzdir));
 
         //black.bind();
 
