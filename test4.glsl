@@ -47,6 +47,12 @@ layout(binding=7) uniform CAL_BUF
     int calidad;
 };
 
+layout(binding=8) uniform DIR_BUF
+{
+    vec3 luzdir;
+};
+
+
 #define EYE eye.xyz
 
 #define NEAR nfwh.x
@@ -599,9 +605,10 @@ float shadow(vec3 ro,vec3 rd, MapSample h)
  
 
 //Sun and Sky variables
-vec3 sunDir = normalize(vec3(-0.3,1.3,0.1));
+vec3 sunDir = normalize(luzdir);
 vec3 sunCol = materials[0].emittance.rgb; 
 vec3 skyCol =  2.0*vec3(0.2,0.35,0.5);
+float cal = 0.02; //calibracion colores
 
 
 vec3 trace(vec3 rd, vec3 eye, inout uint s){
@@ -677,8 +684,8 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
         iColor += skyCol * skySha;
 
         col += mask * materials[sam.matid].emittance.rgb;
-        col += mask * iColor * materials[sam.matid].reflectance.rgb;
-        mask *=  2.0 * materials[sam.matid].reflectance.rgb * abs(dot(N, rd));
+        col +=  mask * iColor * materials[sam.matid].reflectance.rgb;
+        mask *=  cal * materials[sam.matid].reflectance.rgb * abs(dot(N, rd));
 
     
         {   // update direction

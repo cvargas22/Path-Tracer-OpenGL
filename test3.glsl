@@ -569,7 +569,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
 
         col += mask * materials[sam.matid].emittance.rgb;
         col +=  mask * iColor * materials[sam.matid].reflectance.rgb;
-        mask *=  cal * 2.0 * materials[sam.matid].reflectance.rgb * abs(dot(N, rd));
+        mask *=  cal * materials[sam.matid].reflectance.rgb * abs(dot(N, rd));
 
     
         {   // update direction
