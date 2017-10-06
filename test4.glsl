@@ -672,7 +672,8 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
         
         // light 1        
         float sunDif =  max(0.0, dot(sunDir, N));
-        float sunSha = 1.0; if( sunDif > 0.00001 ) sunSha = shadow( eye + N*e, sunDir, sam);
+        float sunSha = 1.0; 
+        sunSha = shadow( eye + N*e, sunDir, sam);
         iColor += sunCol * sunDif * sunSha;
         
         // todo - add back direct
@@ -681,7 +682,8 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
         // light 2
         vec3 skyPoint = cosHemi(N,s);
         float skySha = shadow( eye + N*e, skyPoint, sam);
-        iColor += skyCol * skySha;
+        iColor += (0.05)*skyCol * skySha;
+        //iColor += skyCol;
 
         col += mask * materials[sam.matid].emittance.rgb;
         col +=  mask * iColor * materials[sam.matid].reflectance.rgb;

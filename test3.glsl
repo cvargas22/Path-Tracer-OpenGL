@@ -52,6 +52,10 @@ layout(binding=8) uniform DIR_BUF
     vec3 luzdir;
 };
 
+layout(binding=9) uniform ANG_LUZ
+{
+    float angluz;
+};
 
 
 #define EYE eye.xyz
@@ -485,7 +489,8 @@ float shadow(vec3 ro,vec3 rd, MapSample h)
 vec3 sunDir = normalize(luzdir);
 vec3 sunCol = materials[0].emittance.rgb; 
 vec3 skyCol =  2.0*vec3(0.2,0.35,0.5);
-float cal = 0.02; //calibracion colores
+float cal = 1.0; //calibracion colores
+float skycal = 1.0; //calibracion intensidad cielo
 
 vec3 trace(vec3 rd, vec3 eye, inout uint s){
     
@@ -495,9 +500,11 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
     vec3 mask = vec3(1.0, 1.0, 1.0);
 
 
-    for(int i = 0; i < 8; i++){    // bounces
+    for(int i = 0; i < CBOUNCES; i++){    // bounces
 
         MapSample sam;
+        skycal = max(0.02, sin(angluz));
+        float skycal2 = max(0.002, sin(angluz));
 
         //float t = intersect( eye, rd, sam);
         float res = -1.0;
@@ -525,7 +532,8 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
 
                 // sky
                 col = vec3(0.2,0.5,0.85)*1.1 - rd.y*rd.y*0.5;
-                col = mix( col, 0.85*vec3(0.7,0.75,0.85), pow( 1.0-max(rd.y,0.0), 4.0 ) );
+                col = skycal2*mix( col, 0.85*vec3(0.7,0.75,0.85), pow( 1.0-max(rd.y,0.0), 4.0 ) );
+                //col += rand()*vec3(1.0f, 1.0f, 1.0f);
 
                 // sun
                 col += 0.25*vec3(1.0,0.7,0.4)*pow( sundot,5.0 );
@@ -565,7 +573,8 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
         // light 2
         vec3 skyPoint = cosHemi(N,s);
         float skySha = shadow( eye + N*e, skyPoint, sam);
-        iColor += skyCol * skySha;
+        skycal = max(0.02, sin(angluz));
+        iColor += skycal * skyCol * skySha;
 
         col += mask * materials[sam.matid].emittance.rgb;
         col +=  mask * iColor * materials[sam.matid].reflectance.rgb;
