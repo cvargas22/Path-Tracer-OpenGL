@@ -583,7 +583,7 @@ float intersect(vec3 ro, vec3 rd, MapSample h){
     return res;
 }
 
-float shadow(vec3 ro,vec3 rd, MapSample h)
+float shadow(vec3 ro,vec3 rd, MapSample h, float k)
 {
     float res = 0.0;
     
@@ -595,7 +595,7 @@ float shadow(vec3 ro,vec3 rd, MapSample h)
         h = map(ro+rd*t);
         if(abs(h.distance)<0.0001 || t>tmax) break;
         t += abs(h.distance);
-        //res = min( res, k*(h.distance/t));
+        res = min( res, k*(h.distance/t));
     }
 
     if( t>tmax ) res = 1.0;
@@ -672,7 +672,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
         
         // light 1        
         float sunDif =  max(0.0, dot(sunDir, N));
-        float sunSha = 1.0; if( sunDif > 0.00001 ) sunSha = shadow( eye + N*e, sunDir, sam);
+        float sunSha = 1.0; if( sunDif > 0.00001 ) sunSha = shadow( eye + N*e, sunDir, sam, 32.0);
         iColor += sunCol * sunDif * sunSha;
         
         // todo - add back direct
@@ -680,7 +680,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
     
         // light 2
         vec3 skyPoint = cosHemi(N,s);
-        float skySha = shadow( eye + N*e, skyPoint, sam);
+        float skySha = shadow( eye + N*e, skyPoint, sam, 32.0);
         iColor += skyCol * skySha;
 
         col += mask * materials[sam.matid].emittance.rgb;
