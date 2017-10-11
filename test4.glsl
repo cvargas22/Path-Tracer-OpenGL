@@ -52,6 +52,11 @@ layout(binding=8) uniform DIR_BUF
     vec3 luzdir;
 };
 
+layout(binding=9) uniform ANG_LUZ
+{
+    float angluz;
+};
+
 
 #define EYE eye.xyz
 
@@ -77,7 +82,7 @@ struct Material{
 
 layout(binding=3) buffer SDF_BUF{   
 
-    Material materials[20];
+    Material materials[22];
 
 };
 
@@ -363,7 +368,7 @@ MapSample map(vec3 ray){
 
         vec3(0.0f, 1.0f, 0.0f),
 
-        16));
+        16)); //verde pasto
 
 
          // Montañas
@@ -382,7 +387,7 @@ MapSample map(vec3 ray){
 
         6.5f,
 
-        17));
+        17)); //cafe
 
         a = join(a, sphere(ray, // chrome spheres
 
@@ -429,23 +434,22 @@ MapSample map(vec3 ray){
 
         8.5f,
 
-        17));
-
+        21));
 
 
          // Arboles
 
         a = join(a, cylinderCap(ray,
 
-        vec3(-4.0f, 0.4f, 0.0f),
+        vec3(-4.0f, 0.4f, -3.0f),
 
         vec2(0.1f, 0.6f),
 
-        17));
+        21));
          
         a = join(a, cone(ray,
 
-        vec3(-4.0f, 2.4f, 0.0f), //Posicion
+        vec3(-4.0f, 2.4f, -3.0f), //Posicion
         vec3(1.0f, 0.3f,1.4f), //Dimensiones
 
         16));
@@ -453,15 +457,15 @@ MapSample map(vec3 ray){
 
         a = join(a, cylinderCap(ray,
 
-        vec3(-6.0f, 0.4f, 1.0f),
+        vec3(-5.0f, 0.4f, -3.0f),
 
         vec2(0.1f, 0.6f),
 
-        17));
+        21));
          
         a = join(a, cone(ray,
 
-        vec3(-6.0f, 2.4f, 1.0f), //Posicion
+        vec3(-5.0f, 2.4f, -3.0f), //Posicion
         vec3(1.0f, 0.3f,1.4f), //Dimensiones
 
         16));
@@ -469,15 +473,15 @@ MapSample map(vec3 ray){
 
         a = join(a, cylinderCap(ray,
 
-        vec3(-8.0f, 0.4f, 2.0f),
+        vec3(-6.0f, 0.4f, -3.0f),
 
         vec2(0.1f, 0.6f),
 
-        17));
+        21));
          
         a = join(a, cone(ray,
 
-        vec3(-8.0f, 2.4f, 2.0f), //Posicion
+        vec3(-6.0f, 2.4f, -3.0f), //Posicion
         vec3(1.0f, 0.3f,1.4f), //Dimensiones
 
         16));
@@ -485,35 +489,49 @@ MapSample map(vec3 ray){
 
         a = join(a, cylinderCap(ray,
 
-        vec3(8.0f, 0.4f, 2.0f),
+        vec3(-7.0f, 0.4f, -2.0f),
 
         vec2(0.1f, 0.6f),
 
-        17));
+        21));
          
         a = join(a, cone(ray,
 
-        vec3(8.0f, 2.4f, 2.0f), //Posicion
+        vec3(-7.0f, 2.4f, -2.0f), //Posicion
         vec3(1.0f, 0.3f,1.4f), //Dimensiones
 
         16));
 
 
-         a = join(a, cylinderCap(ray,
+        a = join(a, cylinderCap(ray,
 
-        vec3(6.0f, 0.4f, 1.0f),
+        vec3(-6.0f, 0.4f, -2.0f),
 
         vec2(0.1f, 0.6f),
 
-        17));
+        21));
          
         a = join(a, cone(ray,
 
-        vec3(6.0f, 2.4f, 1.0f), //Posicion
+        vec3(-6.0f, 2.4f, -2.0f), //Posicion
         vec3(1.0f, 0.3f,1.4f), //Dimensiones
 
         16));
 
+        a = join(a, cylinderCap(ray,
+
+        vec3(-5.0f, 0.4f, -2.0f),
+
+        vec2(0.1f, 0.6f),
+
+        21));
+         
+        a = join(a, cone(ray,
+
+        vec3(-5.0f, 2.4f, -2.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
 
         
         return a;
@@ -608,7 +626,8 @@ float shadow(vec3 ro,vec3 rd, MapSample h)
 vec3 sunDir = normalize(luzdir);
 vec3 sunCol = materials[0].emittance.rgb; 
 vec3 skyCol =  2.0*vec3(0.2,0.35,0.5);
-float cal = 0.02; //calibracion colores
+float cal = 1.0; //calibracion colores
+float skycal = 1.0; //calibracion intensidad cielo
 
 
 vec3 trace(vec3 rd, vec3 eye, inout uint s){
@@ -621,6 +640,8 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
     for(int i = 0; i < CBOUNCES; i++){    // bounces
 
         MapSample sam;
+        skycal = max(0.02, sin(angluz));
+        float skycal2 = max(0.002, sin(angluz));
 
         //float t = intersect( eye, rd, sam);
         float res = -1.0;
@@ -648,7 +669,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
 
                 // sky
                 col = vec3(0.2,0.5,0.85)*1.1 - rd.y*rd.y*0.5;
-                col = mix( col, 0.85*vec3(0.7,0.75,0.85), pow( 1.0-max(rd.y,0.0), 4.0 ) );
+                col = skycal2*mix( col, 0.85*vec3(0.7,0.75,0.85), pow( 1.0-max(rd.y,0.0), 4.0 ) );
 
                 // sun
                 col += 0.25*vec3(1.0,0.7,0.4)*pow( sundot,5.0 );
@@ -672,8 +693,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
         
         // light 1        
         float sunDif =  max(0.0, dot(sunDir, N));
-        float sunSha = 1.0; 
-        sunSha = shadow( eye + N*e, sunDir, sam);
+        float sunSha = 1.0; if( sunDif > 0.00001 ) sunSha = shadow( eye + N*e, sunDir, sam);
         iColor += sunCol * sunDif * sunSha;
         
         // todo - add back direct
@@ -682,8 +702,8 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
         // light 2
         vec3 skyPoint = cosHemi(N,s);
         float skySha = shadow( eye + N*e, skyPoint, sam);
-        iColor += (0.05)*skyCol * skySha;
-        //iColor += skyCol;
+        skycal = max(0.02, sin(angluz));
+        iColor += skycal * skyCol * skySha;
 
         col += mask * materials[sam.matid].emittance.rgb;
         col +=  mask * iColor * materials[sam.matid].reflectance.rgb;

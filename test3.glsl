@@ -82,7 +82,7 @@ struct Material{
 
 layout(binding=3) buffer SDF_BUF{   
 
-    Material materials[20];
+    Material materials[22];
 
 };
 
@@ -285,15 +285,8 @@ MapSample plane(vec3 ray, vec3 location, vec3 normal, int mat){
 
 }
 
-MapSample sdPlane(vec3 ray, vec3 location, vec4 n, int mat )
-{
-  // n must be normalized
 
-  n = normalize(n);
-  vec3 p = ray-location;
-  return MapSample(dot(p,n.xyz) + n.w, mat);
 
-}
 MapSample light(vec3 ray, vec3 location, vec3 normal, int mat){
     
     return MapSample(dot(ray-location, normal), mat);
@@ -354,17 +347,48 @@ vec3 tri(vec3 r, float d){
 
 MapSample map(vec3 ray){
 
+        //Esferas lado derecho
 
         MapSample a = sphere(ray, // chrome spheres
 
-        vec3(0.0f,1.0f, 0.0f),
+        vec3(0.0f,6.0f, -1.0f),
 
         1.0f,
 
         15); //rojo
 
+        a = join(a,sphere(ray,
+        vec3(0.0f,4.0f, -1.0f),
+        1.0f,
+        4)); //blanca
+
+        a = join(a,sphere(ray,
+        vec3(0.0f,6.0f, 1.0f),
+        1.0f,
+        4)); 
+        a = join(a,sphere(ray,
+        vec3(0.0f,4.0f, 1.0f),
+        1.0f,
+        15)); 
+
+        //Esferas lado izquierdo
+
+        a = join(a,sphere(ray,
+        vec3(-7.0f,5.0f, 0.5f),
+        2.0f,
+        4)); 
+
+        a = join(a,sphere(ray,
+        vec3(-11.0f,5.0f, 0.5f),
+        1.5f,
+        15)); 
+
+        a = join(a,sphere(ray,
+        vec3(-14.0f,5.0f, 0.5f),
+        1.0f,
+        20)); //amarillo
     
-        // Ground
+        // Suelo
 
         a = join(a, plane(ray, // floor
 
@@ -374,25 +398,14 @@ MapSample map(vec3 ray){
 
         16)); //verde
 
-        a = join(a,sphere(ray,
-        vec3(0.5f,4.0f, 0.0f),
-        1.0f,
-        4)); //blanca
 
-
-        a = join(a, cylinderCap(ray,
-
-        vec3(-1.0f, 0.4f, 5.0f),
-
-        vec2(0.4f, 1.6f),
-
-        19));
+        //Pared
 
         a = join(a, box(ray,    
 
         vec3(-4.0f, 0.5f, 0.0f),
 
-        vec3(0.8f, 0.9f, 2.1f),
+        vec3(0.5f, 7.0f, 4.0f),
 
         19));
 

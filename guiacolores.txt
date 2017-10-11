@@ -11,5 +11,5 @@
 
 linea 16: esfera roja
 linea 17: suelo verde
-linea 18:
+linea 18: cafe montaña
 linea 19:
