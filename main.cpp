@@ -297,6 +297,7 @@ int main(int argc, char* argv[]){
     UBO dirbuf(&luzdir, sizeof(luzdir), 8);
 
     //Variables movimiento de luz en escenario 1
+    //float angulo2 = 0.0f * (3.14 / 180);
     float angulo2 = 0.0f;
     UBO angluz(&angulo2, sizeof(angulo2), 9);
 
@@ -367,8 +368,9 @@ int main(int argc, char* argv[]){
         }
 
         luzdir = glm::vec3(cos(angulo2)*radio2, sin(angulo2)*radio2, 0.0) + diroffset; // movimiento de luz en test 3 y 4
+        //angulo2+=0.01 * (3.14 / 180);
         angulo2+=0.01;
-        //printf("angluz = %f    cos(angluz) = %f\n", angulo2, sin(angulo2));
+        printf("angluz = %f    cos(angluz) = %f\n", angulo2, sin(angulo2));
 
         uni.IVP = camera.getIVP();
 

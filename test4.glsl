@@ -87,6 +87,7 @@ layout(binding=3) buffer SDF_BUF{
 };
 
 #define ROUGHNESS(i) materials[(i)].emittance.w
+#define ABSORB(i) materials[(i)].reflectance.w
 
 vec3 toWorld(float x, float y, float z){
 
@@ -564,7 +565,7 @@ vec3 roughBlend(vec3 newdir, vec3 oldir, vec3 N, int matid){
 
             normalize(
 
-                reflect(oldir, N)), 
+                ABSORB(matid) * reflect(oldir, N)), 
 
             newdir, 
 
@@ -765,7 +766,7 @@ void main(){
     col = col/calidad;
 
 
-    //col = pow( col, vec3(0.8,0.85,0.9) );
+    col = pow( col, vec3(0.8,0.85,0.9) );
     
     
     imageStore(color, pix, vec4(col, 1.0));
