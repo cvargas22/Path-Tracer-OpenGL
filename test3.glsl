@@ -497,7 +497,25 @@ float shadow(vec3 ro,vec3 rd, MapSample h)
     
     return res;
 }
+
+//Metodos utilizados para realizar campo de estrellas
+/*
+float random(float p) {
+  return fract(sin(p)*10000.);
+}
+
+float noise(vec2 p) {
+  return random(p.x + p.y*10000.);
+}
+
+vec3 nightColor(vec2 uv, float y) {
  
+    float n = noise(uv - vec2(0.,1));
+    
+    return n > .99921 ? vec3(random(n)) : vec3(0.);
+    
+}
+ */
 
 //Sun and Sky variables
 vec3 sunDir = normalize(luzdir);
@@ -505,6 +523,8 @@ vec3 sunCol = materials[0].emittance.rgb;
 vec3 skyCol =  2.0*vec3(0.2,0.35,0.5);
 float cal = 1.0; //calibracion colores
 float skycal = 1.0; //calibracion intensidad cielo
+
+
 
 vec3 trace(vec3 rd, vec3 eye, inout uint s){
     
@@ -553,6 +573,11 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
                 col += 0.25*vec3(1.0,0.7,0.4)*pow( sundot,5.0 );
                 col += 0.25*vec3(1.0,0.8,0.6)*pow( sundot,64.0 );
                 col += 0.2*vec3(1.0,0.8,0.6)*pow( sundot,512.0 );
+
+                //stars
+
+                //col+= nightColor(vec2(rd.x,rd.y),rd.y);
+    
             }
             else{
                 col = col*2;
