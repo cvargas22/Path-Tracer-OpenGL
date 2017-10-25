@@ -441,7 +441,7 @@ vec3 roughBlend(vec3 newdir, vec3 oldir, vec3 N, int matid){
 
             normalize(
 
-                ABSORB(matid) * reflect(oldir, N)), 
+               reflect(oldir, N)), 
 
             newdir, 
 
@@ -499,8 +499,8 @@ float shadow(vec3 ro,vec3 rd, MapSample h)
 }
 
 //Metodos utilizados para realizar campo de estrellas
-/*
-float random(float p) {
+
+/*float random(float p) {
   return fract(sin(p)*10000.);
 }
 
@@ -512,10 +512,10 @@ vec3 nightColor(vec2 uv, float y) {
  
     float n = noise(uv - vec2(0.,1));
     
-    return n > .99921 ? vec3(random(n)) : vec3(0.);
+    return n > .999 ? vec3(random(n)) : vec3(0.);
     
-}
- */
+}*/
+
 
 //Sun and Sky variables
 vec3 sunDir = normalize(luzdir);
@@ -524,7 +524,8 @@ vec3 skyCol =  2.0*vec3(0.2,0.35,0.5);
 float cal = 1.0; //calibracion colores
 float skycal = 1.0; //calibracion intensidad cielo
 
-
+vec3 stack[CBOUNCES];
+int materiales[CBOUNCES]; // id de los materiales
 
 vec3 trace(vec3 rd, vec3 eye, inout uint s){
     
@@ -532,18 +533,18 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
     float fdis = 0.0;
     vec3 col = vec3(0.0, 0.0, 0.0);
     vec3 mask = vec3(1.0, 1.0, 1.0);
+    int actual = 0; //posicion en el stack
+    int mActual = 0;
 
-
-    for(int i = 0; i < CBOUNCES; i++){    // bounces
-
+    for(int i = 0; i < CBOUNCES; i++){    // bounces     
+    
         MapSample sam;
         skycal = max(0.02, sin(angluz));
         float skycal2 = max(0.002, sin(angluz));
-
-        //float t = intersect( eye, rd, sam);
         float res = -1.0;
         float tmax = 10000.0;
         float t = 0.01;
+
         for(int j=0; j<CSAMPLES; j++ )
         {
             //sam = map(eye+rd*t);
@@ -576,7 +577,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
 
                 //stars
 
-                //col+= nightColor(vec2(rd.x,rd.y),rd.y);
+                //col+= nightColor(vec2(gl_GlobalInvocationID.x, gl_GlobalInvocationID.y), 56);
     
             }
             else{
@@ -615,8 +616,11 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
         skycal = max(0.02, sin(angluz));
         iColor += skycal * skyCol * skySha;
 
+
         col += mask * materials[sam.matid].emittance.rgb;
         col +=  mask * iColor * materials[sam.matid].reflectance.rgb;
+        stack[actual++] = col;
+        materiales[mActual++] = sam.matid;
         mask *=  cal * materials[sam.matid].reflectance.rgb * abs(dot(N, rd));
 
     
@@ -636,9 +640,20 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
             break;
 
     }
+    
+    float I = 1.0;
+    vec3 colfinal = vec3(0.0, 0.0, 0.0);
+    
+    for(int k = stack.length - 1; k >= 0; --k){
+
+        I = I*ABSORB(materiales[k]);
+        colfinal += stack[k]*I;
+    }
 
 
-    return col;
+    
+
+    return colfinal;
 
 }
 
@@ -682,4 +697,3 @@ void main(){
     imageStore(color, pix, vec4(col, 1.0));
 
 }
-

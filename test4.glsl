@@ -565,7 +565,7 @@ vec3 roughBlend(vec3 newdir, vec3 oldir, vec3 N, int matid){
 
             normalize(
 
-                ABSORB(matid) * reflect(oldir, N)), 
+                reflect(oldir, N)), 
 
             newdir, 
 
@@ -708,6 +708,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
 
         col += mask * materials[sam.matid].emittance.rgb;
         col +=  mask * iColor * materials[sam.matid].reflectance.rgb;
+        //stack[actual++] = col;
         mask *=  cal * materials[sam.matid].reflectance.rgb * abs(dot(N, rd));
 
     
@@ -727,6 +728,14 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
 
     }
 
+    /*float I = 1.0;
+    vec3 colfinal(0,0,0);
+    for(...n -->  1){
+
+        I = I*mat[i].absorcion
+        colfinal += stack[i]*I
+    }
+    */
    
     return col;
 
