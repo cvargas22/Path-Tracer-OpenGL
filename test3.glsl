@@ -73,6 +73,7 @@ layout(binding=9) uniform ANG_LUZ
 #define CBOUNCES 3
 
 #define CSAMPLES 512
+#define SKYINDEX 22
 
 struct Material{
 
@@ -82,7 +83,7 @@ struct Material{
 
 layout(binding=3) buffer SDF_BUF{   
 
-    Material materials[22];
+    Material materials[23];
 
 };
 
@@ -584,6 +585,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
             else{
                 col = col*2;
             }
+            materiales[actual] = SKYINDEX;
             actual++;
             break;
             
