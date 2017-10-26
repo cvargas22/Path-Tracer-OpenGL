@@ -534,10 +534,9 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
     vec3 col = vec3(0.0, 0.0, 0.0);
     vec3 mask = vec3(1.0, 1.0, 1.0);
     int actual = 0; //posicion en el stack
-    int mActual = 0;
 
     for(int i = 0; i < CBOUNCES; i++){    // bounces     
-    
+        stack[actual] = vec3(0.0,0.0,0.0);
         MapSample sam;
         skycal = max(0.02, sin(angluz));
         float skycal2 = max(0.002, sin(angluz));
@@ -566,14 +565,16 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
             if( i==0 ) {
 
                 // sky
-                col = vec3(0.2,0.5,0.85)*1.1 - rd.y*rd.y*0.5;
-                col = skycal2*mix( col, 0.85*vec3(0.7,0.75,0.85), pow( 1.0-max(rd.y,0.0), 4.0 ) );
+                vec3 aux = vec3(0.2,0.5,0.85)*1.1 - rd.y*rd.y*0.5;
+                col = skycal2*mix( aux, 0.85*vec3(0.7,0.75,0.85), pow( 1.0-max(rd.y,0.0), 4.0 ) );
+                stack[actual] += skycal2*mix( aux, 0.85*vec3(0.7,0.75,0.85), pow( 1.0-max(rd.y,0.0), 4.0 ) );
                 //col += rand()*vec3(1.0f, 1.0f, 1.0f);
 
                 // sun
                 col += 0.25*vec3(1.0,0.7,0.4)*pow( sundot,5.0 );
                 col += 0.25*vec3(1.0,0.8,0.6)*pow( sundot,64.0 );
                 col += 0.2*vec3(1.0,0.8,0.6)*pow( sundot,512.0 );
+                stack[actual] += 0.25*vec3(1.0,0.7,0.4)*pow( sundot,5.0 ) + 0.25*vec3(1.0,0.8,0.6)*pow( sundot,64.0 ) + 0.2*vec3(1.0,0.8,0.6)*pow( sundot,512.0 );
 
                 //stars
 
@@ -583,6 +584,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
             else{
                 col = col*2;
             }
+            actual++;
             break;
             
         }
@@ -619,8 +621,8 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
 
         col += mask * materials[sam.matid].emittance.rgb;
         col +=  mask * iColor * materials[sam.matid].reflectance.rgb;
-        stack[actual++] = col;
-        materiales[mActual++] = sam.matid;
+        stack[actual] += mask * materials[sam.matid].emittance.rgb + mask * iColor * materials[sam.matid].reflectance.rgb;
+        materiales[actual] = sam.matid;
         mask *=  cal * materials[sam.matid].reflectance.rgb * abs(dot(N, rd));
 
     
@@ -635,7 +637,7 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
             eye += N * e * 10.0f;
     
         }
-
+        actual++;
         if(absum(mask) < 0.000001)
             break;
 
@@ -644,10 +646,11 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
     float I = 1.0;
     vec3 colfinal = vec3(0.0, 0.0, 0.0);
     
-    for(int k = stack.length - 1; k >= 0; --k){
+    for(int k = 0; k < actual; k++){
+    //for(int k = actual - 1; k >= 0; --k){
 
         I = I*ABSORB(materiales[k]);
-        colfinal += stack[k]*I;
+        colfinal += stack[k] * I;
     }
 
 
