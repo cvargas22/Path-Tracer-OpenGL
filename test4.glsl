@@ -440,9 +440,9 @@ MapSample map(vec3 ray){
         21));
 
 
-         // Arboles
+         // Arboles Version Original
 
-        a = join(a, cylinderCap(ray,
+        /*a = join(a, cylinderCap(ray,
 
         vec3(-4.0f, 0.4f, -3.0f),
 
@@ -535,7 +535,195 @@ MapSample map(vec3 ray){
         vec3(1.0f, 0.3f,1.4f), //Dimensiones
 
         16));
+        */
 
+        //Arboles Version Bosque
+        
+        a = join(a, cylinderCap(ray,
+
+        vec3(-4.0f, 0.4f, -3.0f),
+
+        vec2(0.1f, 0.6f),
+
+        17));
+         
+        a = join(a, cone(ray,
+
+        vec3(-4.0f, 2.4f, -3.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(-5.0f, 0.4f, -3.0f),
+
+        vec2(0.1f, 0.6f),
+
+        17));
+         
+        a = join(a, cone(ray,
+
+        vec3(-5.0f, 2.4f, -3.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(-6.0f, 0.4f, -3.0f),
+
+        vec2(0.1f, 0.6f),
+
+        17));
+         
+        a = join(a, cone(ray,
+
+        vec3(-6.0f, 2.4f, -3.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(-7.0f, 0.4f, -3.0f),
+
+        vec2(0.1f, 0.6f),
+
+        17));
+         
+        a = join(a, cone(ray,
+
+        vec3(-7.0f, 2.4f, -3.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(-4.0f, 0.4f, -2.0f),
+
+        vec2(0.1f, 0.6f),
+
+        17));
+         
+        a = join(a, cone(ray,
+
+        vec3(-4.0f, 2.4f, -2.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(-5.0f, 0.4f, -2.0f),
+
+        vec2(0.1f, 0.6f),
+
+        17));
+         
+        a = join(a, cone(ray,
+
+        vec3(-5.0f, 2.4f, -2.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(-6.0f, 0.4f, -2.0f),
+
+        vec2(0.1f, 0.6f),
+
+        17));
+         
+        a = join(a, cone(ray,
+
+        vec3(-6.0f, 2.4f, -2.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(-7.0f, 0.4f, -2.0f),
+
+        vec2(0.1f, 0.6f),
+
+        17));
+         
+        a = join(a, cone(ray,
+
+        vec3(-7.0f, 2.4f, -2.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(-4.0f, 0.4f, -1.0f),
+
+        vec2(0.1f, 0.6f),
+
+        17));
+         
+        a = join(a, cone(ray,
+
+        vec3(-4.0f, 2.4f, -1.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(-5.0f, 0.4f, -1.0f),
+
+        vec2(0.1f, 0.6f),
+
+        17));
+         
+        a = join(a, cone(ray,
+
+        vec3(-5.0f, 2.4f, -1.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(-6.0f, 0.4f, -1.0f),
+
+        vec2(0.1f, 0.6f),
+
+        17));
+         
+        a = join(a, cone(ray,
+
+        vec3(-6.0f, 2.4f, -1.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+
+        a = join(a, cylinderCap(ray,
+
+        vec3(-7.0f, 0.4f, -1.0f),
+
+        vec2(0.1f, 0.6f),
+
+        17));
+         
+        a = join(a, cone(ray,
+
+        vec3(-7.0f, 2.4f, -1.0f), //Posicion
+        vec3(1.0f, 0.3f,1.4f), //Dimensiones
+
+        16));
+    
         
         return a;
     
