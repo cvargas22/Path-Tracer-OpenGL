@@ -74,6 +74,8 @@ layout(binding=9) uniform ANG_LUZ
 
 #define CSAMPLES 512
 
+#define SKYINDEX 22
+
 struct Material{
 
     vec4 reflectance, emittance;
@@ -82,7 +84,7 @@ struct Material{
 
 layout(binding=3) buffer SDF_BUF{   
 
-    Material materials[22];
+    Material materials[23];
 
 };
 
@@ -380,7 +382,7 @@ MapSample map(vec3 ray){
 
         6.0f,
 
-        17));
+        21));
 
         a = join(a, sphere(ray, // chrome spheres
 
@@ -388,7 +390,7 @@ MapSample map(vec3 ray){
 
         6.5f,
 
-        17)); //cafe
+        21)); //cafe
 
         a = join(a, sphere(ray, // chrome spheres
 
@@ -396,7 +398,7 @@ MapSample map(vec3 ray){
 
         5.5f,
 
-        17));
+        21));
 
         a = join(a, sphere(ray, // chrome spheres
 
@@ -404,7 +406,7 @@ MapSample map(vec3 ray){
 
         7.5f,
 
-        17));
+        21));
 
         a = join(a, sphere(ray, // chrome spheres
 
@@ -412,7 +414,7 @@ MapSample map(vec3 ray){
 
         7.5f,
 
-        17));
+        21));
 
          a = join(a, sphere(ray, // chrome spheres
 
@@ -420,7 +422,7 @@ MapSample map(vec3 ray){
 
         7.5f,
 
-        17));
+        21));
 
         a = join(a, sphere(ray, // chrome spheres
 
@@ -428,7 +430,7 @@ MapSample map(vec3 ray){
 
         5.5f,
 
-        17));
+        21));
         a = join(a, sphere(ray, // chrome spheres
 
         vec3(35.0f,0.0f,-10.0f),
@@ -446,7 +448,7 @@ MapSample map(vec3 ray){
 
         vec2(0.1f, 0.6f),
 
-        21));
+        17));
          
         a = join(a, cone(ray,
 
@@ -462,7 +464,7 @@ MapSample map(vec3 ray){
 
         vec2(0.1f, 0.6f),
 
-        21));
+        17));
          
         a = join(a, cone(ray,
 
@@ -478,7 +480,7 @@ MapSample map(vec3 ray){
 
         vec2(0.1f, 0.6f),
 
-        21));
+        17));
          
         a = join(a, cone(ray,
 
@@ -494,7 +496,7 @@ MapSample map(vec3 ray){
 
         vec2(0.1f, 0.6f),
 
-        21));
+        17));
          
         a = join(a, cone(ray,
 
@@ -510,7 +512,7 @@ MapSample map(vec3 ray){
 
         vec2(0.1f, 0.6f),
 
-        21));
+        17));
          
         a = join(a, cone(ray,
 
@@ -525,7 +527,7 @@ MapSample map(vec3 ray){
 
         vec2(0.1f, 0.6f),
 
-        21));
+        17));
          
         a = join(a, cone(ray,
 
@@ -630,24 +632,26 @@ vec3 skyCol =  2.0*vec3(0.2,0.35,0.5);
 float cal = 1.0; //calibracion colores
 float skycal = 1.0; //calibracion intensidad cielo
 
+vec3 stack[CBOUNCES];
+int materiales[CBOUNCES]; // id de los materiales
 
 vec3 trace(vec3 rd, vec3 eye, inout uint s){
     
     float e = 0.001;
+    float fdis = 0.0;
     vec3 col = vec3(0.0, 0.0, 0.0);
     vec3 mask = vec3(1.0, 1.0, 1.0);
+    int actual = 0; //posicion en el stack
 
-
-    for(int i = 0; i < CBOUNCES; i++){    // bounces
-
+    for(int i = 0; i < CBOUNCES; i++){    // bounces     
+        stack[actual] = vec3(0.0,0.0,0.0);
         MapSample sam;
         skycal = max(0.02, sin(angluz));
         float skycal2 = max(0.002, sin(angluz));
-
-        //float t = intersect( eye, rd, sam);
         float res = -1.0;
         float tmax = 10000.0;
         float t = 0.01;
+
         for(int j=0; j<CSAMPLES; j++ )
         {
             //sam = map(eye+rd*t);
@@ -669,23 +673,40 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
             if( i==0 ) {
 
                 // sky
-                col = vec3(0.2,0.5,0.85)*1.1 - rd.y*rd.y*0.5;
-                col = skycal2*mix( col, 0.85*vec3(0.7,0.75,0.85), pow( 1.0-max(rd.y,0.0), 4.0 ) );
+                vec3 aux = vec3(0.2,0.5,0.85)*1.1 - rd.y*rd.y*0.5;
+                col = skycal2*mix( aux, 0.85*vec3(0.7,0.75,0.85), pow( 1.0-max(rd.y,0.0), 4.0 ) );
+                stack[actual] += skycal2*mix( aux, 0.85*vec3(0.7,0.75,0.85), pow( 1.0-max(rd.y,0.0), 4.0 ) );
+                //col += rand()*vec3(1.0f, 1.0f, 1.0f);
 
                 // sun
                 col += 0.25*vec3(1.0,0.7,0.4)*pow( sundot,5.0 );
                 col += 0.25*vec3(1.0,0.8,0.6)*pow( sundot,64.0 );
                 col += 0.2*vec3(1.0,0.8,0.6)*pow( sundot,512.0 );
+                stack[actual] += 0.25*vec3(1.0,0.7,0.4)*pow( sundot,5.0 ) + 0.25*vec3(1.0,0.8,0.6)*pow( sundot,64.0 ) + 0.2*vec3(1.0,0.8,0.6)*pow( sundot,512.0 );
+
+                //stars
+
+                //col+= nightColor(vec2(gl_GlobalInvocationID.x, gl_GlobalInvocationID.y), 56);
+    
             }
             else{
                 col = col*2;
             }
+            materiales[actual] = SKYINDEX;
+            actual++;
             break;
             
         }
 
+        if( i==0 ) fdis = t;
+
+        //vec3 pos = eye + rd * t;
+        //eye = eye + rd * t;
+
         vec3 N = map_normal(eye);
 
+
+    
 
         vec3 iColor = vec3(0.0, 0.0, 0.0);
 
@@ -706,9 +727,11 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
         skycal = max(0.02, sin(angluz));
         iColor += skycal * skyCol * skySha;
 
+
         col += mask * materials[sam.matid].emittance.rgb;
         col +=  mask * iColor * materials[sam.matid].reflectance.rgb;
-        //stack[actual++] = col;
+        stack[actual] += mask * materials[sam.matid].emittance.rgb + mask * iColor * materials[sam.matid].reflectance.rgb;
+        materiales[actual] = sam.matid;
         mask *=  cal * materials[sam.matid].reflectance.rgb * abs(dot(N, rd));
 
     
@@ -719,25 +742,30 @@ vec3 trace(vec3 rd, vec3 eye, inout uint s){
             rd = cosHemi(N, s);
 
             rd = roughBlend(rd, oldir, N, sam.matid);
+
             eye += N * e * 10.0f;
     
         }
-
+        actual++;
         if(absum(mask) < 0.000001)
             break;
 
     }
+    
+    float I = 1.0;
+    vec3 colfinal = vec3(0.0, 0.0, 0.0);
+    
+    for(int k = 0; k < actual; k++){
+    //for(int k = actual - 1; k >= 0; --k){
 
-    /*float I = 1.0;
-    vec3 colfinal(0,0,0);
-    for(...n -->  1){
-
-        I = I*mat[i].absorcion
-        colfinal += stack[i]*I
+        I = I*ABSORB(materiales[k]);
+        colfinal += stack[k] * I;
     }
-    */
-   
-    return col;
+
+
+    
+
+    return colfinal;
 
 }
 

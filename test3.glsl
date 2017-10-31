@@ -73,6 +73,7 @@ layout(binding=9) uniform ANG_LUZ
 #define CBOUNCES 3
 
 #define CSAMPLES 512
+
 #define SKYINDEX 22
 
 struct Material{
