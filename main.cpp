@@ -150,6 +150,22 @@ bool v3_equal(const glm::vec3& a, const glm::vec3& b){
 
 }
 
+void _update_fps_counter(GLFWwindow* window) {
+  static double previous_seconds = glfwGetTime();
+  static int frame_count;
+  double current_seconds = glfwGetTime();
+  double elapsed_seconds = current_seconds - previous_seconds;
+  if (elapsed_seconds > 0.25) {
+    previous_seconds = current_seconds;
+    double fps = (double)frame_count / elapsed_seconds;
+    char tmp[128];
+    sprintf(tmp, "opengl @ fps: %.2f", fps);
+    glfwSetWindowTitle(window, tmp);
+    frame_count = 0;
+  }
+  frame_count++;
+}
+
 
 
 int main(int argc, char* argv[]){
@@ -248,8 +264,6 @@ int main(int argc, char* argv[]){
 
     Timer timer;
 
-    
-
     Uniforms uni;
 
     uni.IVP = camera.getIVP();
@@ -299,15 +313,14 @@ int main(int argc, char* argv[]){
     //Variables movimiento de luz en escenario 1
     //float angulo2 = 0.0f * (3.14 / 180);
     float angulo2 = 0.0f;
+
     UBO angluz(&angulo2, sizeof(angulo2), 9);
-
-
 
     input.poll();
 
     unsigned i = 0;
 
-    float frame = 1.0f;
+    float frame = 0.0f;
 
     float irm = 1.0f / RAND_MAX;
 
@@ -320,12 +333,18 @@ int main(int argc, char* argv[]){
     
     bool movLuz = true; //Flag para movimiento de luz
 
-
     float radio2 = 10.0;
 
- 
+    float t1 = t;
 
-    while(window.open()){
+    float min_fps= 0.0f;
+
+    float max_fps = 1000.0f;
+
+    while(frame <= 500){
+
+        _update_fps_counter(window.getWindow());
+        double current_seconds = glfwGetTime();
 
         glm::vec3 eye = camera.getEye();
 
@@ -335,15 +354,14 @@ int main(int argc, char* argv[]){
 
         input.poll(luzpos);
 
+
         if(!v3_equal(eye, camera.getEye()) || !v3_equal(at, camera.getAt()))
 
             frame = 2;
 
-    
+        /*if(((int)(frame) & 31) == 31)
 
-        if(((int)(frame) & 31) == 31)
-
-            printf("SPP: %f\n", frame);
+            printf("SPP: %f\n", frame);*/
 
         //Sacar paredes
         /*if (glfwGetKey (window.getWindow(), GLFW_KEY_P)) {
@@ -397,24 +415,29 @@ int main(int argc, char* argv[]){
         depth.call(callsizeX, callsizeY, 1);
 
         glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
-        
-
+  
         color.bind();
 
         colTex.bind(0, "color", color);
 
-        screen.draw();
-
-        
+        screen.draw();        
 
         window.swap();
 
         frame = MIN(frame + 1.0f, 1000000.0f);
 
+        frame++;
+
     }
 
+    float t2 = (float)glfwGetTime();
 
+    float T = (t2 - t1) * 10;
+
+    float R = T/frame * 1000; //ms
+    float FPS = frame/T;
+
+    printf("frames promedio: %f\n", FPS);
 
     return 0;
 
