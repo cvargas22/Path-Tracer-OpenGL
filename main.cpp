@@ -30,6 +30,8 @@
 
 #include <fstream>
 
+#include <omp.h>
+
 
 
 using namespace std;
@@ -106,6 +108,20 @@ float frameBegin(unsigned& i, float& t){
 
 }
 
+float fpsCounter(unsigned& i, float& t){
+
+    float dt = (float)glfwGetTime() - t;
+    t += dt;
+    i++;
+    float fps =  i / t;
+  
+    i = 0;
+    t = 0.0f;
+    glfwSetTime(0.0);
+
+    return fps;
+}
+
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -150,21 +166,6 @@ bool v3_equal(const glm::vec3& a, const glm::vec3& b){
 
 }
 
-void _update_fps_counter(GLFWwindow* window) {
-  static double previous_seconds = glfwGetTime();
-  static int frame_count;
-  double current_seconds = glfwGetTime();
-  double elapsed_seconds = current_seconds - previous_seconds;
-  if (elapsed_seconds > 0.25) {
-    previous_seconds = current_seconds;
-    double fps = (double)frame_count / elapsed_seconds;
-    char tmp[128];
-    sprintf(tmp, "opengl @ fps: %.2f", fps);
-    glfwSetWindowTitle(window, tmp);
-    frame_count = 0;
-  }
-  frame_count++;
-}
 
 
 
@@ -227,9 +228,11 @@ int main(int argc, char* argv[]){
 
     camera.resize(WIDTH, HEIGHT);
 
-    camera.setEye({-1.0f, 4.0f, 10.0f});
+    //Posicion de camara ideal para escenario 2 
 
-    camera.lookAt({0.0f, 0.0f, 0.0f});
+    camera.setEye({-6.0f, 4.0f, 18.0f});
+
+    camera.lookAt({-6.0f, 0.0f, 0.0f});
 
     camera.update();
 
@@ -316,11 +319,11 @@ int main(int argc, char* argv[]){
 
     UBO angluz(&angulo2, sizeof(angulo2), 9);
 
-    input.poll();
+    //input.poll();
 
     unsigned i = 0;
 
-    float frame = 0.0f;
+    double frame = 0.0f;
 
     float irm = 1.0f / RAND_MAX;
 
@@ -335,16 +338,23 @@ int main(int argc, char* argv[]){
 
     float radio2 = 10.0;
 
-    float t1 = t;
+    // float min_fps= 0.0f;
 
-    float min_fps= 0.0f;
+    //Variables movimiento de camara 
 
-    float max_fps = 1000.0f;
+    float angulo3 = 0.0f;
 
-    while(frame <= 500){
+    float radio3 = 10.0f;
 
-        _update_fps_counter(window.getWindow());
-        double current_seconds = glfwGetTime();
+    // float max_fps = 1000.0f;
+    //float t1 = (float)glfwGetTime();
+    double t1 = omp_get_wtime();
+
+
+    while(!glfwWindowShouldClose(window.getWindow())){
+
+        // _update_fps_counter(window.getWindow());
+        // double current_seconds = glfwGetTime();
 
         glm::vec3 eye = camera.getEye();
 
@@ -352,16 +362,41 @@ int main(int argc, char* argv[]){
 
         input.poll(frameBegin(i, t), camera);
 
+        if(angulo3 <= 6.3f) {
+
+            camera.yaw((cos(angulo3)*radio3) * 0.005);
+
+            angulo3 += 0.0023;
+
+        }
+        else {
+
+            if (angulo3 > 6.3f && angulo3 <= 8.8f ) {
+
+                camera.pitch((cos(angulo3)*10.0f) * 0.005);   
+                angulo3 += 0.0009;
+
+            }
+
+            //glfwSetWindowShouldClose(window.getWindow(), 1);
+
+        }
+
+    
+
+
+
+
         input.poll(luzpos);
 
 
-        if(!v3_equal(eye, camera.getEye()) || !v3_equal(at, camera.getAt()))
+        // if(!v3_equal(eye, camera.getEye()) || !v3_equal(at, camera.getAt()))
 
-            frame = 2;
+        //     frame = 2;
 
-        /*if(((int)(frame) & 31) == 31)
+        // if(((int)(frame) & 31) == 31)
 
-            printf("SPP: %f\n", frame);*/
+        //     printf("SPP: %f\n", frame);
 
         //Sacar paredes
         /*if (glfwGetKey (window.getWindow(), GLFW_KEY_P)) {
@@ -426,18 +461,22 @@ int main(int argc, char* argv[]){
 
         frame = MIN(frame + 1.0f, 1000000.0f);
 
-        frame++;
-
     }
 
-    float t2 = (float)glfwGetTime();
+    //float t2 = (float)glfwGetTime();
+    double t2 = omp_get_wtime();
 
-    float T = (t2 - t1) * 10;
+    double T = (t2 - t1); 
 
-    float R = T/frame * 1000; //ms
-    float FPS = frame/T;
+    double R = T/frame; //ms
+    double FPS = frame/T;
 
-    printf("frames promedio: %f\n", FPS);
+
+    printf("t1: %f\n", t1);
+    printf("t2: %f\n", t2);
+    printf("tiempo: %f\n", T);
+    printf("tiempo: %f\n", R);
+    printf("frames per second: %f\n", FPS);
 
     return 0;
 

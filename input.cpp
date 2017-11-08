@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "glm/glm.hpp"
 #include "input.h"
 
@@ -17,7 +18,7 @@ float Input::m_relCursorY = 0.0f;
 Input::Input(GLFWwindow* window) : m_glwindow(window){
     glfwSetInputMode(m_glwindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetKeyCallback(m_glwindow, key_callback);
-    glfwSetCursorPosCallback(m_glwindow, cursor_position_callback);
+    //glfwSetCursorPosCallback(m_glwindow, cursor_position_callback);
     glfwSetMouseButtonCallback(m_glwindow, mouse_button_callback);
     glfwSetScrollCallback(m_glwindow, scroll_callback);
 }
@@ -35,7 +36,7 @@ void Input::poll(float dt, Camera& cam){
     v.x += glfwGetKey(m_glwindow, GLFW_KEY_D) ? dt : 0.0f;
     v.y += glfwGetKey(m_glwindow, GLFW_KEY_SPACE) ? dt : 0.0f;
     v.y -= glfwGetKey(m_glwindow, GLFW_KEY_LEFT_SHIFT) ? dt : 0.0f;
-    cam.move(v);
+    //cam.move(v);
     cam.yaw(m_relCursorX * dt);
     cam.pitch(m_relCursorY * dt);
     m_relCursorX = 0.0f;

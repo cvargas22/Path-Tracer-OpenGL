@@ -5,7 +5,7 @@ CXX = g++
 INC_DIRS = -I/usr/include
 #CXXFLAGS = $(INC_DIRS) -std=c++11 -pthread -stdlib=libstdc++ -Wfatal-errors -Wall
 CXXFLAGS = $(INC_DIRS) -std=c++11 -pthread -Wfatal-errors -Wall
-LDFLAGS = -L/usr/lib
+LDFLAGS = -L/usr/lib -fopenmp
 LDLIBS = -lGLEW -lGL -lglfw -pthread
 
 
