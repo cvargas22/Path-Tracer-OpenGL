@@ -166,6 +166,13 @@ bool v3_equal(const glm::vec3& a, const glm::vec3& b){
 
 }
 
+float RandomFloat(float a, float b) {
+    float random = ((float) rand()) / (float) RAND_MAX;
+    float diff = b - a;
+    float r = random * diff;
+    return a + r;
+}
+
 
 
 
@@ -180,8 +187,11 @@ int main(int argc, char* argv[]){
     string nombre_test = "depth1.glsl";
     int calidad = 1;
 
+    int tipoCamara = 0;
 
-    if(argc == 5){
+    Camera camera;
+
+    if(argc == 6){
 
         WIDTH = atoi(argv[1]);
 
@@ -191,12 +201,35 @@ int main(int argc, char* argv[]){
 
         if(test == 1){
             nombre_test = "depth1.glsl";
+
+            camera.resize(WIDTH, HEIGHT);
+
+            camera.setEye({-1.0f, 4.0f, 10.0f});
+
+            camera.lookAt({0.0f, 0.0f, 0.0f});
+
+            camera.update();
         }
         if(test == 2){
             nombre_test = "depth2.glsl";
         }
         if(test == 3){
+
             nombre_test = "test3.glsl";
+
+            //Variables camara
+
+            camera.resize(WIDTH, HEIGHT);
+
+            //Posicion de camara ideal para escenario 2 
+
+            camera.setEye({-6.0f, 4.0f, 18.0f});
+
+            camera.lookAt({-6.0f, 0.0f, 0.0f});
+
+            camera.update();
+
+
         }
         if(test == 4){
             nombre_test = "test4.glsl";
@@ -204,9 +237,11 @@ int main(int argc, char* argv[]){
 
         calidad = atoi(argv[4]);
 
+        tipoCamara = atoi(argv[5]);
+
     }
     else{
-        printf("%s\n", "Ejecutar como ./Renderer.exe WIDTH HEIGHT escenario calidad");
+        printf("%s\n", "Ejecutar como ./Renderer.exe WIDTH HEIGHT escenario calidad tipoCamara");
         exit(EXIT_FAILURE);
     }
     
@@ -223,21 +258,6 @@ int main(int argc, char* argv[]){
     }
 
     
-    //Variables camara
-    Camera camera;
-
-    camera.resize(WIDTH, HEIGHT);
-
-    //Posicion de camara ideal para escenario 2 
-
-    camera.setEye({-6.0f, 4.0f, 18.0f});
-
-    camera.lookAt({-6.0f, 0.0f, 0.0f});
-
-    camera.update();
-
-    
-
     const unsigned layoutSize = 8;
 
     const unsigned callsizeX = WIDTH / layoutSize + ((WIDTH % layoutSize) ? 1 : 0);
@@ -351,10 +371,15 @@ int main(int argc, char* argv[]){
     double t1 = omp_get_wtime();
 
 
-    while(!glfwWindowShouldClose(window.getWindow())){
+    //Variables posicion para el random
 
-        // _update_fps_counter(window.getWindow());
-        // double current_seconds = glfwGetTime();
+    int x = 0.0f;
+
+    int y = 0.0f;
+
+    while(frame <= 10000){
+
+       
 
         glm::vec3 eye = camera.getEye();
 
@@ -362,30 +387,42 @@ int main(int argc, char* argv[]){
 
         input.poll(frameBegin(i, t), camera);
 
-        if(angulo3 <= 6.3f) {
+        //Cambiar opcion para camara fija y camara aleatoria, cambiar funcion coseno por un random
+        if(tipoCamara == 0){
+
+            if(angulo3 <= 6.3f) {
 
             camera.yaw((cos(angulo3)*radio3) * 0.005);
 
-            angulo3 += 0.0023;
+            angulo3 += 0.03;
 
-        }
-        else {
+            }
+            else {
 
-            if (angulo3 > 6.3f && angulo3 <= 8.8f ) {
+                if (angulo3 > 6.3f && angulo3 <= 9.3f ) {
 
-                camera.pitch((cos(angulo3)*10.0f) * 0.005);   
-                angulo3 += 0.0009;
+                    camera.pitch((cos(angulo3)*10.0f) * 0.01);   
+                    angulo3 += 0.03;
+
+                }
+
+                //glfwSetWindowShouldClose(window.getWindow(), 1);
 
             }
 
-            //glfwSetWindowShouldClose(window.getWindow(), 1);
+        }
+        
+        //Opcion con numeros aleatorios
+        if(tipoCamara == 1){
+
+            x = rand() % 6 - 3;
+
+            y = rand() % 6 - 3;
+
+            camera.yaw((float)x);
+            camera.pitch((float)y);
 
         }
-
-    
-
-
-
 
         input.poll(luzpos);
 
