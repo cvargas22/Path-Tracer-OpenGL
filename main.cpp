@@ -373,10 +373,80 @@ int main(int argc, char* argv[]){
 
     //Variables posicion para el random
 
-    int x = 0.0f;
+    float x = 0.0f;
 
-    int y = 0.0f;
+    float y = 0.0f;
 
+    float vx = 0.0f;
+
+    float vy = 0.0f;
+
+    float px = 0.0f;
+
+    float py = 0.0f;
+
+    while(frame <= 400){
+
+    
+        glm::vec3 eye = camera.getEye();
+        glm::vec3 at = camera.getAt();
+        input.poll(frameBegin(i, t), camera);
+        input.poll(luzpos);
+
+        if(movLuz){
+             luzpos = glm::vec3(cos(angulo)*radio,0.0, sin(angulo)*radio) + luzoffset; //movimiento de luz en test 1
+             angulo+=0.01;
+             
+        }
+
+        if (glfwGetKey (window.getWindow(), GLFW_KEY_U)) {
+            movLuz= false;
+            
+        }
+
+        luzdir = glm::vec3(cos(angulo2)*radio2, sin(angulo2)*radio2, 0.0) + diroffset; // movimiento de luz en test 3 y 4
+        //angulo2+=0.01 * (3.14 / 180);
+        angulo2+=0.01;
+        //printf("angluz = %f    cos(angluz) = %f\n", angulo2, sin(angulo2));
+
+        uni.IVP = camera.getIVP();
+
+        uni.eye = glm::vec4(camera.getEye(), 1.0f);
+
+        uni.seed = glm::vec4(rand() * irm, rand() * irm, rand() * irm, frame);
+
+        unibuf.upload(&uni, sizeof(uni));
+  
+
+        posbuf.upload(&luzpos, sizeof(luzpos));
+        wallbuf.upload(&on, sizeof(on));
+        locbuf.upload(&loc, sizeof(loc));
+        calbuf.upload(&calidad, sizeof(calidad));
+        dirbuf.upload(&luzdir, sizeof(luzdir));
+        angluz.upload(&angulo2, sizeof(angulo2));
+
+        //black.bind();
+
+        //black.call(callsizeX, callsizeY, 1);
+
+        depth.bind();
+
+        depth.call(callsizeX, callsizeY, 1);
+
+        glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+  
+        color.bind();
+
+        colTex.bind(0, "color", color);
+
+        screen.draw();        
+
+        window.swap();
+
+        frame = MIN(frame + 1.0f, 1000000.0f);
+
+    }
+    frame = 0;
     while(frame <= 10000){
 
        
@@ -399,28 +469,55 @@ int main(int argc, char* argv[]){
             }
             else {
 
-                if (angulo3 > 6.3f && angulo3 <= 9.3f ) {
+                //if (angulo3 > 6.3f && angulo3 <= 9.3f ) {
 
                     camera.pitch((cos(angulo3)*10.0f) * 0.01);   
                     angulo3 += 0.03;
 
-                }
+                //}
 
                 //glfwSetWindowShouldClose(window.getWindow(), 1);
 
             }
+            if(angulo3 >= 12.6f){
 
+                angulo3 = 0;
+
+            }
         }
         
         //Opcion con numeros aleatorios
         if(tipoCamara == 1){
 
-            x = rand() % 6 - 3;
+            float f = 0.05f;
+            float q = 0.01f;
 
-            y = rand() % 6 - 3;
+            float dx = f * ((float)rand() / RAND_MAX) - f/2.0;
+            float dy = f * ((float)rand() / RAND_MAX) - f/2.0;
+            if(dx >= 0.0f && vx < 1.0f){
+                 vx += dx;
+            }
+            if(dx < 0.0f && vx > -1.0f){
+                 vx += dx;
+            }
 
-            camera.yaw((float)x);
-            camera.pitch((float)y);
+            if(dy >= 0.0f && vy < 1.0f){
+                 vy += dy;
+            }
+            if(dy < 0.0f && vy > -1.0f){
+                 vy += dy;
+            }
+            
+            //printf("vx %f  vy %f\n", vx, vy);
+            
+            camera.yaw(vx);
+            camera.pitch(vy);
+
+            px += q * ((float)rand() / RAND_MAX) - q/2.0;
+
+            py += q * ((float)rand() / RAND_MAX) - q/2.0;
+
+            //camera.move(glm::vec3(x,0.0, y));
 
         }
 

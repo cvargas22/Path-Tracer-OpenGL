@@ -57,7 +57,7 @@ public:
     void pitch(float amt){
         m_at += amt * getUp(V);
         auto forward = glm::normalize(m_at - m_eye);
-        if(fabsf(forward.y) > 0.95f)
+        if(fabsf(forward.y) > 0.6f)
             m_at -= amt * getUp(V);
     }
     void yaw(float amt){
