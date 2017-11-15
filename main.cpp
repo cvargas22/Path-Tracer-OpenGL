@@ -108,6 +108,8 @@ float frameBegin(unsigned& i, float& t){
 
 }
 
+
+
 float fpsCounter(unsigned& i, float& t){
 
     float dt = (float)glfwGetTime() - t;
@@ -191,7 +193,11 @@ int main(int argc, char* argv[]){
 
     Camera camera;
 
-    if(argc == 6){
+    int numObj = 2;
+
+    numObj = atoi(argv[6]);
+
+    if(argc == 7){
 
         WIDTH = atoi(argv[1]);
 
@@ -211,13 +217,7 @@ int main(int argc, char* argv[]){
             camera.update();
         }
         if(test == 2){
-            nombre_test = "depth2.glsl";
-        }
-        if(test == 3){
-
             nombre_test = "test3.glsl";
-
-            //Variables camara
 
             camera.resize(WIDTH, HEIGHT);
 
@@ -228,11 +228,38 @@ int main(int argc, char* argv[]){
             camera.lookAt({-6.0f, 0.0f, 0.0f});
 
             camera.update();
+        }
+        if(test == 3){
+
+            nombre_test = "test4.glsl";
+
+            //Variables camara
+
+            camera.resize(WIDTH, HEIGHT);
+
+            //Posicion de camara ideal para escenario 2 
+
+            camera.setEye({4.0f, 4.0f, 30.0f});
+
+            camera.lookAt({-6.0f, 0.0f, 0.0f});
+
+            camera.update();
 
 
         }
         if(test == 4){
-            nombre_test = "test4.glsl";
+            nombre_test = "test5.glsl";
+
+            camera.resize(WIDTH, HEIGHT);
+
+            //Posicion de camara ideal para escenario 2 
+
+            camera.setEye({0.0f, 1.5f + (float)sqrtf(numObj), 1.4f * sqrtf(numObj) + 6.0f});
+
+            camera.lookAt({0.0f, 0.0f, 0.0f});
+
+            camera.update();
+           
         }
 
         calidad = atoi(argv[4]);
@@ -241,7 +268,7 @@ int main(int argc, char* argv[]){
 
     }
     else{
-        printf("%s\n", "Ejecutar como ./Renderer.exe WIDTH HEIGHT escenario calidad tipoCamara");
+        printf("%s\n", "Ejecutar como ./Renderer.exe WIDTH HEIGHT escenario calidad tipoCamara numObj");
         exit(EXIT_FAILURE);
     }
     
@@ -327,6 +354,8 @@ int main(int argc, char* argv[]){
 
     UBO calbuf(&calidad,sizeof(calidad), 7);
 
+    UBO numbuf(&numObj,sizeof(numObj), 10);
+
     UBO posbuf(&luzpos, sizeof(luzpos), 4);
     
     UBO wallbuf(&on, sizeof(on), 5);
@@ -358,7 +387,6 @@ int main(int argc, char* argv[]){
 
     float radio2 = 10.0;
 
-    // float min_fps= 0.0f;
 
     //Variables movimiento de camara 
 
@@ -366,31 +394,37 @@ int main(int argc, char* argv[]){
 
     float radio3 = 10.0f;
 
-    // float max_fps = 1000.0f;
     //float t1 = (float)glfwGetTime();
     double t1 = omp_get_wtime();
 
 
     //Variables posicion para el random
 
-    float x = 0.0f;
+    //float x = 0.0f;
 
-    float y = 0.0f;
+    //float y = 0.0f;
 
     float vx = 0.0f;
 
     float vy = 0.0f;
 
-    float px = 0.0f;
+    //float px = 0.0f;
 
-    float py = 0.0f;
+    //float py = 0.0f;
+
+    float min_fps = 100000.0f;
+
+    float max_fps = 0.0f;
+
+    float fps = 0.0f;
 
     while(frame <= 400){
 
     
         glm::vec3 eye = camera.getEye();
         glm::vec3 at = camera.getAt();
-        input.poll(frameBegin(i, t), camera);
+        fps = fpsCounter(i,t);
+        input.poll(fps, camera);
         input.poll(luzpos);
 
         if(movLuz){
@@ -422,6 +456,7 @@ int main(int argc, char* argv[]){
         wallbuf.upload(&on, sizeof(on));
         locbuf.upload(&loc, sizeof(loc));
         calbuf.upload(&calidad, sizeof(calidad));
+        numbuf.upload(&numObj,sizeof(numObj));
         dirbuf.upload(&luzdir, sizeof(luzdir));
         angluz.upload(&angulo2, sizeof(angulo2));
 
@@ -446,18 +481,31 @@ int main(int argc, char* argv[]){
         frame = MIN(frame + 1.0f, 1000000.0f);
 
     }
-    frame = 0;
-    while(frame <= 10000){
 
-       
+    frame = 0;
+    while(frame <= 2000){
+
 
         glm::vec3 eye = camera.getEye();
 
         glm::vec3 at = camera.getAt();
 
-        input.poll(frameBegin(i, t), camera);
+        fps = fpsCounter(i,t);
+
+        input.poll(fps, camera);
+
+        //fps = fpsCounter(i,t);
 
         //Cambiar opcion para camara fija y camara aleatoria, cambiar funcion coseno por un random
+
+        if (fps > max_fps){
+          max_fps = fps;
+        }
+
+        if(fps < min_fps){
+            min_fps = fps;
+        }
+
         if(tipoCamara == 0){
 
             if(angulo3 <= 6.3f) {
@@ -489,8 +537,7 @@ int main(int argc, char* argv[]){
         //Opcion con numeros aleatorios
         if(tipoCamara == 1){
 
-            float f = 0.05f;
-            float q = 0.01f;
+            float f = 0.01f;
 
             float dx = f * ((float)rand() / RAND_MAX) - f/2.0;
             float dy = f * ((float)rand() / RAND_MAX) - f/2.0;
@@ -512,14 +559,10 @@ int main(int argc, char* argv[]){
             
             camera.yaw(vx);
             camera.pitch(vy);
-
-            px += q * ((float)rand() / RAND_MAX) - q/2.0;
-
-            py += q * ((float)rand() / RAND_MAX) - q/2.0;
-
-            //camera.move(glm::vec3(x,0.0, y));
-
         }
+
+
+
 
         input.poll(luzpos);
 
@@ -606,11 +649,20 @@ int main(int argc, char* argv[]){
     double FPS = frame/T;
 
 
-    printf("t1: %f\n", t1);
-    printf("t2: %f\n", t2);
     printf("tiempo: %f\n", T);
-    printf("tiempo: %f\n", R);
+    printf("MS: %f\n", R);
+    printf("FPS MAXIMO: %f\n", max_fps);
+    printf("FPS MINIMO: %f\n", min_fps);
     printf("frames per second: %f\n", FPS);
+
+    FILE * f;
+
+    char buf[256];
+    sprintf(buf, "data_e%i", test);
+    f = fopen(buf, "a");
+
+    //fprintf(f,"%-10s%-10s%-10s%-10s%-10s%-10s%-10s%-10s%-10s%-10s\n", "#C", "Rx", "Ry", "T", "MS", "FPS", "MIN", "MAX", "camara", "numObj");
+    fprintf(f,"%-10d%-10d%-10d%-10.3f%-10.3f%-10.3f%-10.3f%-10.3f%-10d%-10d\n",calidad, WIDTH, HEIGHT, T, R, FPS, min_fps, max_fps, tipoCamara, numObj*numObj); 
 
     return 0;
 
