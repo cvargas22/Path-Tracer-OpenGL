@@ -649,12 +649,12 @@ int main(int argc, char* argv[]){
     double FPS = frame/T;
 
 
-    printf("tiempo: %f\n", T);
-    printf("MS: %f\n", R);
-    printf("FPS MAXIMO: %f\n", max_fps);
-    printf("FPS MINIMO: %f\n", min_fps);
-    printf("frames per second: %f\n", FPS);
-
+    //printf("tiempo: %f\n", T);
+    //printf("MS: %f\n", R);
+    //printf("FPS MAXIMO: %f\n", max_fps);
+    //printf("FPS MINIMO: %f\n", min_fps);
+    printf("%f\n", FPS);
+    /*
     FILE * f;
 
     char buf[256];
@@ -663,7 +663,7 @@ int main(int argc, char* argv[]){
 
     //fprintf(f,"%-10s%-10s%-10s%-10s%-10s%-10s%-10s%-10s%-10s%-10s\n", "#C", "Rx", "Ry", "T", "MS", "FPS", "MIN", "MAX", "camara", "numObj");
     fprintf(f,"%-10d%-10d%-10d%-10.3f%-10.3f%-10.3f%-10.3f%-10.3f%-10d%-10d\n",calidad, WIDTH, HEIGHT, T, R, FPS, min_fps, max_fps, tipoCamara, numObj*numObj); 
-
+    */
     return 0;
 
 }
