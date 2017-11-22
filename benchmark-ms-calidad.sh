@@ -1,6 +1,6 @@
 #!/bin/sh
 if [ "$#" -ne 5 ]; then
-    echo "run as ./benchmark-fps-calidad.sh E STARTQ ENDQ DQ SAMPLES"
+    echo "run as ./benchmark-ms-calidad.sh E STARTQ ENDQ DQ SAMPLES"
     exit;
 fi
 E=$1
@@ -38,7 +38,7 @@ do
     TSTDEV=${STDEV}
     TSTERR=${STERR}
     echo "---> E=${E} --> (MEAN, VAR, STDEV, STERR) -> (${TMEAN}[ms], ${TVAR}, ${TSTDEV}, ${TSTERR})"
-    echo "$Q   ${Rx}   ${Ry}   ${TMEAN} ${TVAR} ${TSTDEV} ${TSTERR}" >> data/ms_calidad__E${E}.dat
+    echo "$Q   ${Rx}   ${Ry}   ${TMEAN}           ${TVAR}           ${TSTDEV}            ${TSTERR}" >> data/ms_calidad__E${E}.dat
     #echo -n "$C   ${RX}   ${RY}   ${TMEAN} ${TVAR} ${TSTDEV} ${TSTERR}         " >> data/fps_res_C${C}_E${E}.dat
     echo " "
 done 

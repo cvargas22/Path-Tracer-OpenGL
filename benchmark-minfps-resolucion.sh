@@ -1,29 +1,33 @@
 #!/bin/sh
-if [ "$#" -ne 5 ]; then
-    echo "run as ./benchmark-maxfps-calidad.sh E STARTQ ENDQ DQ SAMPLES"
+if [ "$#" -ne 6 ]; then
+    echo "run as ./benchmark-minfps-resolucion.sh E STARTN ENDN DN Q SAMPLES"
     exit;
 fi
 E=$1
-STARTQ=$2
-ENDQ=$3
-DQ=$4
-SAMPLES=$5
+STARTN=$2
+ENDN=$3
+DN=$4
+Q=$5
+SAMPLES=$6
 Rx=400
 Ry=300
 C=1
 NOBJ=1
 METHODS=("dummy" "BBox" "Avril" "Lambda (Newton)" "Lambda (Default)" "Flatrec" "Lambda (Inverse)" "Rectangle" "Recursive")
 NM=8
-for Q in `seq ${STARTQ} ${DQ} ${ENDQ}`;
+for R in `seq ${STARTN} ${DN} ${ENDN}`;
 do
-    echo "Q=${Q} E=${E}  Rx=${Rx} Ry=${Ry} C=${C} NOBJ=${NOBJ}"
     M=0
     S=0
+    RX=$(($Rx*$R))
+    RY=$(($Ry*$R))
+    echo "Q=${Q} E=${E}  Rx=${RX} Ry=${RY} C=${C} NOBJ=${NOBJ}"
+    #echo "Rx=${RX} Ry=${RY}"
     #echo "./Renderer.exe ${Rx} ${}   ${N} ${R}    ${q} ${RPARAM}"
     for k in `seq 1 ${SAMPLES}`;
     do
         #x=`./${BINARY} ${DEV} ${N} ${R} ${q} ${RPARAM}`
-        x=`./Renderer.exe ${Rx} ${Ry} ${E} ${Q} ${C} ${NOBJ}`
+        x=`./Renderer.exe ${RX} ${RY} ${E} ${Q} ${C} ${NOBJ}`
         oldM=$M;
         M=$(echo "scale=10;  $M+($x-$M)/$k"           | bc)
         S=$(echo "scale=10;  $S+($x-$M)*($x-${oldM})" | bc)
@@ -38,7 +42,7 @@ do
     TSTDEV=${STDEV}
     TSTERR=${STERR}
     echo "---> E=${E} --> (MEAN, VAR, STDEV, STERR) -> (${TMEAN}[ms], ${TVAR}, ${TSTDEV}, ${TSTERR})"
-    echo "$Q   ${Rx}   ${Ry}   ${TMEAN}           ${TVAR}           ${TSTDEV}            ${TSTERR}" >> data/maxfps_calidad__E${E}.dat
+    echo "$Q   ${RX}   ${RY}   ${TMEAN}           ${TVAR}           ${TSTDEV}            ${TSTERR}" >> data/minfps_res_Q${Q}_E${E}.dat
     #echo -n "$C   ${RX}   ${RY}   ${TMEAN} ${TVAR} ${TSTDEV} ${TSTERR}         " >> data/fps_res_C${C}_E${E}.dat
     echo " "
 done 

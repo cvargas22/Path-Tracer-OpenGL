@@ -1,6 +1,6 @@
 #!/bin/sh
 if [ "$#" -ne 6 ]; then
-    echo "run as ./benchmark-fps-calidad.sh E STARTN ENDN DN Q SAMPLES"
+    echo "run as ./benchmark-fps-resolucion.sh E STARTN ENDN DN Q SAMPLES"
     exit;
 fi
 E=$1
@@ -42,7 +42,7 @@ do
     TSTDEV=${STDEV}
     TSTERR=${STERR}
     echo "---> E=${E} --> (MEAN, VAR, STDEV, STERR) -> (${TMEAN}[ms], ${TVAR}, ${TSTDEV}, ${TSTERR})"
-    echo "$Q   ${RX}   ${RY}   ${TMEAN} ${TVAR} ${TSTDEV} ${TSTERR}" >> data/fps_res_Q${Q}_E${E}.dat
+    echo "$Q   ${RX}   ${RY}   ${TMEAN}           ${TVAR}           ${TSTDEV}            ${TSTERR}" >> data/fps_res_Q${Q}_E${E}.dat
     #echo -n "$C   ${RX}   ${RY}   ${TMEAN} ${TVAR} ${TSTDEV} ${TSTERR}         " >> data/fps_res_C${C}_E${E}.dat
     echo " "
 done 
